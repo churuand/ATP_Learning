@@ -42,7 +42,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 overflow-hidden">
+      <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 overflow-hidden bg-[linear-gradient(to_bottom,hsl(var(--background)),hsl(var(--secondary)/0.3))]">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
             
@@ -131,7 +131,7 @@ export default function Home() {
       </section>
 
       {/* Welcome / About Section */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-[linear-gradient(135deg,hsl(var(--background)),hsl(var(--secondary)/0.2),hsl(var(--background)))]">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="relative">
@@ -183,7 +183,7 @@ export default function Home() {
       </section>
 
       {/* CTA / Contact Section */}
-      <section className="py-24 bg-background">
+      <section className="py-24 bg-[linear-gradient(to_top,hsl(var(--secondary)/0.4),hsl(var(--background)))]">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-5 space-y-6">
@@ -239,7 +239,7 @@ export default function Home() {
       </section>
 
       {/* Partners Section */}
-      <section className="py-24 bg-secondary/30">
+      <section className="py-24 bg-[linear-gradient(to_bottom,hsl(var(--secondary)/0.4),hsl(var(--secondary)/0.1))]">
         <div className="container mx-auto px-4 text-center">
            <p className="text-lg font-medium text-muted-foreground mb-12 max-w-3xl mx-auto">
              We work with students and graduates from universities to local colleges
