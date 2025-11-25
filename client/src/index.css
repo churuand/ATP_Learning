@@ -27,13 +27,14 @@
   --color-primary: hsl(356 85% 42%); /* Deep Corporate Red */
   --color-primary-foreground: hsl(0 0% 100%);
 
-  --color-secondary: hsl(356 25% 94%); /* Very light warm grey/red */
+  /* Tweaked Secondary for better visual separation from white */
+  --color-secondary: hsl(356 20% 93%); 
   --color-secondary-foreground: hsl(356 85% 32%);
 
   --color-muted: hsl(356 10% 94%);
   --color-muted-foreground: hsl(356 10% 40%);
 
-  --color-accent: hsl(25 90% 55%); /* Vibrant Orange/Gold for sophisticated highlights */
+  --color-accent: hsl(25 90% 55%);
   --color-accent-foreground: hsl(0 0% 100%);
 
   --color-destructive: hsl(0 84% 60%);
