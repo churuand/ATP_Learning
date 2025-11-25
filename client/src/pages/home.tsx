@@ -238,6 +238,34 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Partners Section */}
+      <section className="py-24 bg-secondary/30">
+        <div className="container mx-auto px-4 text-center">
+           <p className="text-lg font-medium text-muted-foreground mb-12 max-w-3xl mx-auto">
+             We work with students and graduates from universities to local colleges
+           </p>
+           
+           <div className="flex flex-wrap justify-center items-center gap-12 lg:gap-20 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
+             {/* Partner Logos - Using text placeholders for now, in production would be SVGs/Images */}
+             <div className="text-2xl font-bold font-serif text-primary/80 flex items-center gap-2">
+               <Building2 className="w-8 h-8" /> Assistance Abroad
+             </div>
+             <div className="text-3xl font-bold font-sans text-blue-700 flex items-center gap-2">
+               grcg<sup className="text-xs">®</sup>
+             </div>
+             <div className="bg-[#d95d2e] text-white p-2 font-bold text-xl rounded-sm">
+               abc
+             </div>
+             <div className="italic font-bold text-2xl text-blue-600">
+               GEM
+             </div>
+             <div className="border-2 border-primary/30 rounded-lg px-4 py-2 text-xl font-light tracking-wide">
+               applicaa
+             </div>
+           </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-primary text-white py-16 border-t border-white/10">
         <div className="container mx-auto px-4">
