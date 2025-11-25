@@ -14,39 +14,40 @@
   --radius-2xl: 2rem;
   --radius-full: 9999px;
 
-  --color-background: hsl(40 20% 98%);
-  --color-foreground: hsl(182 43% 15%);
+  --color-background: hsl(0 0% 100%);
+  --color-foreground: hsl(356 40% 10%);
 
   --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(182 43% 15%);
+  --color-card-foreground: hsl(356 40% 10%);
 
   --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(182 43% 15%);
+  --color-popover-foreground: hsl(356 40% 10%);
 
-  --color-primary: hsl(182 43% 15%); /* Deep Green */
+  /* Professional Red Palette */
+  --color-primary: hsl(356 85% 42%); /* Deep Corporate Red */
   --color-primary-foreground: hsl(0 0% 100%);
 
-  --color-secondary: hsl(345 60% 92%); /* Soft Pink */
-  --color-secondary-foreground: hsl(182 43% 15%);
+  --color-secondary: hsl(356 25% 94%); /* Very light warm grey/red */
+  --color-secondary-foreground: hsl(356 85% 32%);
 
-  --color-muted: hsl(182 20% 90%);
-  --color-muted-foreground: hsl(182 20% 40%);
+  --color-muted: hsl(356 10% 94%);
+  --color-muted-foreground: hsl(356 10% 40%);
 
-  --color-accent: hsl(35 60% 90%); /* Soft warm accent */
-  --color-accent-foreground: hsl(182 43% 15%);
+  --color-accent: hsl(25 90% 55%); /* Vibrant Orange/Gold for sophisticated highlights */
+  --color-accent-foreground: hsl(0 0% 100%);
 
   --color-destructive: hsl(0 84% 60%);
   --color-destructive-foreground: hsl(0 0% 98%);
 
-  --color-border: hsl(182 20% 90%);
-  --color-input: hsl(182 20% 90%);
-  --color-ring: hsl(182 43% 15%);
+  --color-border: hsl(356 20% 90%);
+  --color-input: hsl(356 20% 90%);
+  --color-ring: hsl(356 85% 42%);
 
-  --color-chart-1: hsl(182 43% 15%);
-  --color-chart-2: hsl(345 60% 85%);
-  --color-chart-3: hsl(35 60% 80%);
-  --color-chart-4: hsl(182 30% 50%);
-  --color-chart-5: hsl(345 50% 70%);
+  --color-chart-1: hsl(356 85% 42%);
+  --color-chart-2: hsl(25 90% 55%);
+  --color-chart-3: hsl(356 30% 70%);
+  --color-chart-4: hsl(356 20% 20%);
+  --color-chart-5: hsl(25 80% 75%);
 }
 
 @layer base {
