@@ -78,6 +78,23 @@ export default function Home() {
                   <p className="text-sm text-gray-600">Personalized matching for Engineering, IT, Marketing, and more.</p>
                 </div>
               </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 pt-6">
+                <Button className="rounded-full bg-primary text-white hover:bg-primary/90 px-8 py-6 text-lg font-medium shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                  Apply now!
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="rounded-full border-primary/20 text-primary hover:bg-primary/5 px-8 py-6 text-lg font-medium hover:-translate-y-0.5 transition-all"
+                  onClick={() => {
+                    const nextSection = document.getElementById('welcome-section');
+                    nextSection?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  Learn more
+                </Button>
+              </div>
             </motion.div>
 
             {/* Right Content - The Arches */}
@@ -139,7 +156,7 @@ export default function Home() {
       </section>
 
       {/* Welcome / About Section - Warm Mist Background */}
-      <section className="py-24 bg-secondary relative -mt-12 pt-32">
+      <section id="welcome-section" className="py-24 bg-secondary relative -mt-12 pt-32">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="relative">
