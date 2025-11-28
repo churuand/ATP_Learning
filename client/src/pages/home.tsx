@@ -23,8 +23,12 @@ export default function Home() {
           </div>
           
           <div className="hidden md:flex items-center gap-8 font-medium text-sm text-gray-600">
-            <a href="#" className="hover:text-primary transition-colors">About Us</a>
-            <a href="#" className="hover:text-primary transition-colors">Programs</a>
+            <Link href="/">
+              <a className="hover:text-primary transition-colors">About Us</a>
+            </Link>
+            <Link href="/programs">
+              <a className="hover:text-primary transition-colors">Programs</a>
+            </Link>
             <a href="#" className="hover:text-primary transition-colors">For Employers</a>
             <a href="#" className="hover:text-primary transition-colors">Internships</a>
             <a href="#" className="hover:text-primary transition-colors">Insights</a>
