@@ -124,24 +124,26 @@ export default function Programs() {
 
             {/* Card 3: Intern Jobs - Pink/Rose (Secondary but darker for contrast, or a soft pink with dark text) */}
             {/* Reference used a light pink with dark text. Let's match that for variety. */}
-            <motion.div 
-              whileHover={{ y: -10 }}
-              className="bg-[#eacbd2] rounded-[2rem] p-8 text-primary flex flex-col h-full min-h-[420px] shadow-xl relative overflow-hidden group cursor-pointer"
-            >
-              <div className="absolute -right-12 -top-12 w-40 h-40 bg-white/40 rounded-full blur-3xl group-hover:bg-white/60 transition-all duration-500" />
-              
-              <h3 className="text-3xl font-serif mb-6 relative z-10">Intern Jobs</h3>
-              
-              <p className="text-primary/80 leading-relaxed mb-12 relative z-10 text-sm md:text-base">
-                Gain hands-on career experience in a real business environment, learning industry-specific, technical, and soft skills that set you apart in the job market.
-              </p>
-              
-              <div className="mt-auto flex justify-end relative z-10">
-                <div className="w-12 h-12 rounded-full border border-primary/20 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                  <ArrowRight className="w-5 h-5" />
+            <Link href="/intern-jobs">
+              <motion.div 
+                whileHover={{ y: -10 }}
+                className="bg-[#eacbd2] rounded-[2rem] p-8 text-primary flex flex-col h-full min-h-[420px] shadow-xl relative overflow-hidden group cursor-pointer"
+              >
+                <div className="absolute -right-12 -top-12 w-40 h-40 bg-white/40 rounded-full blur-3xl group-hover:bg-white/60 transition-all duration-500" />
+                
+                <h3 className="text-3xl font-serif mb-6 relative z-10">Intern Jobs</h3>
+                
+                <p className="text-primary/80 leading-relaxed mb-12 relative z-10 text-sm md:text-base">
+                  Gain hands-on career experience in a real business environment, learning industry-specific, technical, and soft skills that set you apart in the job market.
+                </p>
+                
+                <div className="mt-auto flex justify-end relative z-10">
+                  <div className="w-12 h-12 rounded-full border border-primary/20 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                    <ArrowRight className="w-5 h-5" />
+                  </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </Link>
 
           </div>
         </div>
