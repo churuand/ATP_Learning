@@ -121,6 +121,12 @@ export default function StudentPortal() {
           <SidebarItem icon={Calendar} label="Events" />
           <SidebarItem icon={BookOpen} label="Resources" />
           <SidebarItem icon={User} label="Members" />
+
+          <div className="px-4 pt-6">
+             <Button className="w-full bg-gradient-to-r from-primary to-red-600 hover:from-red-700 hover:to-red-800 text-white shadow-lg shadow-red-200 border-0">
+               Book Consultation
+             </Button>
+          </div>
         </div>
 
         <div className="mt-auto pt-6 border-t border-gray-100">
