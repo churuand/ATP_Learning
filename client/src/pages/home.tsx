@@ -24,7 +24,7 @@ export default function Home() {
           
           <div className="hidden md:flex items-center gap-8 font-medium text-sm text-gray-600">
             <Link href="/">
-              <a className="hover:text-primary transition-colors">About Us</a>
+              <a className="hover:text-primary transition-colors">Sudents & Graduates</a>
             </Link>
             <Link href="/programs">
               <a className="hover:text-primary transition-colors">Programs</a>
@@ -46,7 +46,6 @@ export default function Home() {
           </div>
         </div>
       </nav>
-
       {/* Hero Section - Clean White */}
       <section className="relative pt-12 pb-32 lg:pt-20 lg:pb-40 overflow-hidden bg-white rounded-b-[3rem] z-10 shadow-sm">
         <div className="container mx-auto px-4">
@@ -156,7 +155,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Welcome / About Section - Warm Mist Background */}
       <section id="welcome-section" className="py-24 bg-secondary relative -mt-12 pt-32">
         <div className="container mx-auto px-4">
@@ -217,7 +215,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* CTA / Contact Section - Deep Red Background for Maximum Contrast */}
       <section className="py-24 bg-primary text-white">
         <div className="container mx-auto px-4">
@@ -281,7 +278,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Partners Section - Clean White */}
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4 text-center">
@@ -309,7 +305,6 @@ export default function Home() {
            </div>
         </div>
       </section>
-
       {/* Footer - Dark Grey/Red Overlay */}
       <footer className="bg-[#1a1a1a] text-white py-16 border-t border-white/5">
         <div className="container mx-auto px-4">
