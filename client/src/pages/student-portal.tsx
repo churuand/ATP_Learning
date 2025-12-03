@@ -146,7 +146,6 @@ export default function StudentPortal() {
           </button>
         </div>
       </aside>
-
       {/* Main Content */}
       <main className="flex-1 min-w-0">
         {/* Header */}
@@ -169,7 +168,7 @@ export default function StudentPortal() {
             <div className="h-8 w-[1px] bg-gray-200"></div>
             <div className="text-right hidden md:block">
               <div className="text-xs text-gray-500">Student Success</div>
-              <div className="text-sm font-bold text-primary">DataCAP Internship</div>
+              <div className="text-sm font-bold text-primary">MasterClasses</div>
             </div>
           </div>
         </header>
