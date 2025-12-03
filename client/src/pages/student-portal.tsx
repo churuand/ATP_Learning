@@ -1,6 +1,9 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   LayoutDashboard, 
   PlayCircle, 
@@ -14,7 +17,8 @@ import {
   Clock,
   MoreVertical,
   Play,
-  HelpCircle
+  HelpCircle,
+  Lock
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -30,6 +34,7 @@ import studentPortrait from "@assets/generated_images/friendly_female_student_po
 export default function StudentPortal() {
   const [location, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<'all' | 'full' | 'shorts'>('all');
+  const [isConsultationOpen, setIsConsultationOpen] = useState(false);
 
   // Mock Data
   const fullVideos = [
@@ -124,9 +129,97 @@ export default function StudentPortal() {
           <SidebarItem icon={User} label="Members" />
 
           <div className="px-4 pt-6">
-             <Button className="w-full bg-gradient-to-r from-primary to-red-600 hover:from-red-700 hover:to-red-800 text-white shadow-lg shadow-red-200 border-0">
-               Book Consultation
-             </Button>
+             <Dialog open={isConsultationOpen} onOpenChange={setIsConsultationOpen}>
+               <DialogTrigger asChild>
+                 <Button className="w-full bg-gradient-to-r from-primary to-red-600 hover:from-red-700 hover:to-red-800 text-white shadow-lg shadow-red-200 border-0">
+                   Book Consultation
+                 </Button>
+               </DialogTrigger>
+               <DialogContent className="bg-transparent border-0 shadow-none p-0 max-w-4xl w-full flex flex-col items-center justify-center overflow-hidden">
+                 <div className="w-full bg-[#c71018] p-8 md:p-12 text-center rounded-t-3xl relative z-10">
+                    <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-4">
+                      Book your free internship <br/> placement session.
+                    </h2>
+                    <p className="text-white/80 max-w-2xl mx-auto text-lg font-light leading-relaxed">
+                      No commitment. We'll understand your goals, review your CV, and suggest the best internship options for you.
+                    </p>
+                 </div>
+                 
+                 <div className="w-full bg-white p-8 md:p-12 rounded-b-3xl -mt-4 relative z-20 shadow-2xl max-w-3xl mx-auto">
+                    <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="fullName" className="text-gray-700 font-medium">Full Name</Label>
+                          <Input id="fullName" placeholder="John Doe" className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="email" className="text-gray-700 font-medium">Email Address</Label>
+                          <Input id="email" type="email" placeholder="john@example.com" className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="phone" className="text-gray-700 font-medium">Phone (Optional)</Label>
+                          <Input id="phone" placeholder="+61 ..." className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="degree" className="text-gray-700 font-medium">Degree / Major</Label>
+                          <Input id="degree" placeholder="e.g. Master of IT" className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="gradYear" className="text-gray-700 font-medium">Graduation Year</Label>
+                          <Input id="gradYear" placeholder="e.g. 2025" className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="city" className="text-gray-700 font-medium">City in Australia</Label>
+                          <Select>
+                            <SelectTrigger className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20">
+                              <SelectValue placeholder="Select City" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="sydney">Sydney</SelectItem>
+                              <SelectItem value="melbourne">Melbourne</SelectItem>
+                              <SelectItem value="brisbane">Brisbane</SelectItem>
+                              <SelectItem value="perth">Perth</SelectItem>
+                              <SelectItem value="adelaide">Adelaide</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="startMonth" className="text-gray-700 font-medium">Preferred Internship Start Month</Label>
+                        <Select>
+                          <SelectTrigger className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20">
+                            <SelectValue placeholder="Select Month" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="jan">January</SelectItem>
+                            <SelectItem value="feb">February</SelectItem>
+                            <SelectItem value="mar">March</SelectItem>
+                            <SelectItem value="apr">April</SelectItem>
+                            <SelectItem value="may">May</SelectItem>
+                            <SelectItem value="jun">June</SelectItem>
+                            <SelectItem value="jul">July</SelectItem>
+                            <SelectItem value="aug">August</SelectItem>
+                            <SelectItem value="sep">September</SelectItem>
+                            <SelectItem value="oct">October</SelectItem>
+                            <SelectItem value="nov">November</SelectItem>
+                            <SelectItem value="dec">December</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <Button className="w-full bg-[#bf360c] hover:bg-[#a02e0a] text-white h-14 text-lg font-bold rounded-full shadow-lg shadow-orange-900/20 mt-4">
+                        Book My Session
+                      </Button>
+                      
+                      <div className="flex items-center justify-center gap-2 text-gray-400 text-xs mt-4">
+                        <Lock className="w-3 h-3" />
+                        <span>Your details are kept private and only used to contact you about internship options.</span>
+                      </div>
+                    </form>
+                 </div>
+               </DialogContent>
+             </Dialog>
           </div>
         </div>
 
