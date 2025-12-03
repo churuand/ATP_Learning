@@ -30,8 +30,7 @@ export default function Home() {
               <a className="hover:text-primary transition-colors">Employers</a>
             </Link>
             <a href="#" className="hover:text-primary transition-colors">About us</a>
-            <a href="#" className="hover:text-primary transition-colors">Internships</a>
-            <a href="#" className="hover:text-primary transition-colors">Insights</a>
+            <a href="#" className="hover:text-primary transition-colors">Contact Us</a>
           </div>
 
           <div className="flex items-center gap-4">
