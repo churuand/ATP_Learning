@@ -186,11 +186,7 @@ export default function VideoPlayer() {
                         </div>
                         <div>
                             <div className="font-bold text-gray-900 text-sm">{currentVideo.author}</div>
-                            <div className="text-xs text-gray-500">{currentVideo.subscribers} subscribers</div>
                         </div>
-                        <Button className="ml-4 rounded-full bg-black text-white hover:bg-gray-800 h-9 px-4 text-sm font-medium">
-                            Subscribe
-                        </Button>
                     </div>
 
                     <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
