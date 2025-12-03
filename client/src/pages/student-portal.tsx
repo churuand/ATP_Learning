@@ -13,7 +13,8 @@ import {
   Filter,
   Clock,
   MoreVertical,
-  Play
+  Play,
+  HelpCircle
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
