@@ -287,47 +287,48 @@ export default function StudentPortal() {
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {fullVideos.map((video) => (
-                  <motion.div 
-                    key={video.id}
-                    whileHover={{ y: -5 }}
-                    className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group cursor-pointer hover:shadow-md transition-all"
-                  >
-                    <div className="relative aspect-video overflow-hidden">
-                      <img src={video.image} alt={video.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                      <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/70 backdrop-blur-sm text-white text-xs font-bold rounded-md">
-                        {video.duration}
-                      </div>
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
-                        <div className="w-12 h-12 rounded-full bg-white text-primary flex items-center justify-center shadow-lg">
-                          <Play className="w-5 h-5 fill-current ml-1" />
+                  <Link href={`/video/${video.id}`} key={video.id}>
+                    <motion.div 
+                      whileHover={{ y: -5 }}
+                      className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group cursor-pointer hover:shadow-md transition-all"
+                    >
+                      <div className="relative aspect-video overflow-hidden">
+                        <img src={video.image} alt={video.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/70 backdrop-blur-sm text-white text-xs font-bold rounded-md">
+                          {video.duration}
                         </div>
-                      </div>
-                    </div>
-                    
-                    <div className="p-5">
-                      <div className="flex items-center gap-2 mb-3">
-                         <span className="px-2 py-0.5 rounded-full bg-secondary text-primary text-[10px] font-bold uppercase tracking-wide">
-                           {video.category}
-                         </span>
-                      </div>
-                      <h4 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                        {video.title}
-                      </h4>
-                      
-                      <div className="flex items-center gap-3 pt-4 mt-4 border-t border-gray-50">
-                        <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
-                          {/* Placeholder avatar */}
-                          <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
-                            {video.author[0]}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
+                          <div className="w-12 h-12 rounded-full bg-white text-primary flex items-center justify-center shadow-lg">
+                            <Play className="w-5 h-5 fill-current ml-1" />
                           </div>
                         </div>
-                        <div className="text-xs">
-                          <div className="font-bold text-gray-900">{video.author}</div>
-                          <div className="text-gray-500">{video.role}</div>
+                      </div>
+                      
+                      <div className="p-5">
+                        <div className="flex items-center gap-2 mb-3">
+                           <span className="px-2 py-0.5 rounded-full bg-secondary text-primary text-[10px] font-bold uppercase tracking-wide">
+                             {video.category}
+                           </span>
+                        </div>
+                        <h4 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                          {video.title}
+                        </h4>
+                        
+                        <div className="flex items-center gap-3 pt-4 mt-4 border-t border-gray-50">
+                          <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
+                            {/* Placeholder avatar */}
+                            <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
+                              {video.author[0]}
+                            </div>
+                          </div>
+                          <div className="text-xs">
+                            <div className="font-bold text-gray-900">{video.author}</div>
+                            <div className="text-gray-500">{video.role}</div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
+                    </motion.div>
+                  </Link>
                 ))}
               </div>
             </div>
