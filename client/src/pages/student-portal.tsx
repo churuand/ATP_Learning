@@ -162,12 +162,12 @@ export default function StudentPortal() {
 
           <div className="flex items-center gap-6 pl-8">
             <button className="relative text-gray-500 hover:text-primary transition-colors">
-              <Bell className="w-6 h-6" />
+              <HelpCircle className="w-6 h-6" />
               <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
             </button>
             <div className="h-8 w-[1px] bg-gray-200"></div>
             <div className="text-right hidden md:block">
-              <div className="text-xs text-gray-500">Current Program</div>
+              <div className="text-xs text-gray-500">Student Success</div>
               <div className="text-sm font-bold text-primary">DataCAP Internship</div>
             </div>
           </div>
