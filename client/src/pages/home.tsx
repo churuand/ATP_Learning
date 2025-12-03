@@ -29,7 +29,7 @@ export default function Home() {
             <Link href="/programs">
               <a className="hover:text-primary transition-colors">Employers</a>
             </Link>
-            <a href="#" className="hover:text-primary transition-colors">For Employers</a>
+            <a href="#" className="hover:text-primary transition-colors">About us</a>
             <a href="#" className="hover:text-primary transition-colors">Internships</a>
             <a href="#" className="hover:text-primary transition-colors">Insights</a>
           </div>
