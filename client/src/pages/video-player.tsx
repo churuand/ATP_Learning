@@ -201,9 +201,6 @@ export default function VideoPlayer() {
                         <Button variant="ghost" className="bg-gray-100 rounded-full h-9 px-4 gap-2 hover:bg-gray-200 text-gray-700">
                             <Share2 className="w-4 h-4" /> Share
                         </Button>
-                        <Button variant="ghost" size="icon" className="bg-gray-100 rounded-full h-9 w-9 hover:bg-gray-200 text-gray-700">
-                            <MoreHorizontal className="w-4 h-4" />
-                        </Button>
                     </div>
                 </div>
 
