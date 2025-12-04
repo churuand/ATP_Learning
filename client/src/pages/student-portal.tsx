@@ -30,6 +30,7 @@ import masterclass2 from "@assets/generated_images/resume_workshop_thumbnail.png
 import short1 from "@assets/generated_images/quick_career_tip_vertical.png";
 import short2 from "@assets/generated_images/networking_tip_vertical.png";
 import studentPortrait from "@assets/generated_images/friendly_female_student_portrait.png"; 
+import welcomeAvatar from "@assets/generated_images/pixel_art_avatar_of_asian_male_in_suit.png";
 
 export default function StudentPortal() {
   const [location, setLocation] = useLocation();
@@ -246,8 +247,7 @@ export default function StudentPortal() {
            <div className="w-full bg-white p-8 rounded-3xl shadow-2xl relative">
                <div className="flex items-start gap-4">
                    <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200">
-                       {/* Placeholder for pixel art avatar */}
-                       <img src={`https://api.dicebear.com/7.x/pixel-art/svg?seed=Viet`} alt="Viet Dang" className="w-full h-full object-cover" />
+                       <img src={welcomeAvatar} alt="Viet Dang" className="w-full h-full object-cover" />
                    </div>
                    <div className="space-y-1 flex-1">
                        <div className="flex items-center gap-2">
