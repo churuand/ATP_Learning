@@ -36,7 +36,7 @@ export default function Home() {
             <Button variant="outline" className="hidden sm:flex rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-primary">
               Contact Us
             </Button>
-            <Link href="/student-portal">
+            <Link href="/login">
               <Button className="rounded-full bg-primary text-white hover:bg-primary/90 px-6 shadow-lg shadow-primary/20">
                 Login
               </Button>

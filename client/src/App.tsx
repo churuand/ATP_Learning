@@ -8,12 +8,14 @@ import Programs from "@/pages/programs";
 import InternJobs from "@/pages/intern-jobs";
 import StudentPortal from "@/pages/student-portal";
 import VideoPlayer from "@/pages/video-player";
+import Login from "@/pages/login";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/login" component={Login} />
       <Route path="/programs" component={Programs} />
       <Route path="/intern-jobs" component={InternJobs} />
       <Route path="/student-portal" component={StudentPortal} />
