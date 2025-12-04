@@ -202,14 +202,27 @@ export default function StudentPortal() {
                       </div>
                       <div className="space-y-2">
                         <Label
-                          htmlFor="phone"
+                          htmlFor="country"
                           className="text-gray-700 font-medium"
                         >
-                          Phone (Optional)
+                          Country
                         </Label>
                         <Input
-                          id="phone"
-                          placeholder="+61 ..."
+                          id="country"
+                          placeholder="Current Country"
+                          className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="city"
+                          className="text-gray-700 font-medium"
+                        >
+                          City
+                        </Label>
+                        <Input
+                          id="city"
+                          placeholder="Current City"
                           className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20"
                         />
                       </div>
@@ -238,26 +251,6 @@ export default function StudentPortal() {
                           placeholder="e.g. 2025"
                           className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20"
                         />
-                      </div>
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="city"
-                          className="text-gray-700 font-medium"
-                        >
-                          City in Australia
-                        </Label>
-                        <Select>
-                          <SelectTrigger className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20">
-                            <SelectValue placeholder="Select City" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="sydney">Sydney</SelectItem>
-                            <SelectItem value="melbourne">Melbourne</SelectItem>
-                            <SelectItem value="brisbane">Brisbane</SelectItem>
-                            <SelectItem value="perth">Perth</SelectItem>
-                            <SelectItem value="adelaide">Adelaide</SelectItem>
-                          </SelectContent>
-                        </Select>
                       </div>
                     </div>
 
