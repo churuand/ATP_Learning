@@ -18,7 +18,8 @@ import {
   MoreVertical,
   Play,
   HelpCircle,
-  Lock
+  Lock,
+  Coins
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -232,6 +233,10 @@ export default function StudentPortal() {
             <div className="flex-1 min-w-0">
               <div className="text-sm font-bold text-gray-900 truncate">Việt Nguyen</div>
               <div className="text-xs text-gray-500 truncate">Student Member</div>
+              <div className="flex items-center gap-1.5 mt-1.5 text-xs font-medium text-amber-600 bg-amber-50 w-fit px-2.5 py-1 rounded-full border border-amber-100">
+                 <Coins className="w-3 h-3 fill-current" />
+                 100 credits
+              </div>
             </div>
           </div>
           <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors text-sm font-medium">
