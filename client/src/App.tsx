@@ -9,6 +9,7 @@ import InternJobs from "@/pages/intern-jobs";
 import StudentPortal from "@/pages/student-portal";
 import VideoPlayer from "@/pages/video-player";
 import Login from "@/pages/login";
+import QuickTips from "@/pages/quick-tips";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/intern-jobs" component={InternJobs} />
       <Route path="/student-portal" component={StudentPortal} />
       <Route path="/video/:id" component={VideoPlayer} />
+      <Route path="/quick-tips/:id" component={QuickTips} />
       <Route component={NotFound} />
     </Switch>
   );

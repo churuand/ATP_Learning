@@ -151,8 +151,7 @@ export default function StudentPortal() {
         if (purchaseDialog.type === 'full') {
           setLocation(`/video/${purchaseDialog.video.id}`);
         } else {
-          // For shorts, maybe show a "playing" state or similar (mocking just closing for now)
-          // alert("Playing short video...");
+          setLocation(`/quick-tips/${purchaseDialog.video.id}`);
         }
       } else {
         alert("Insufficient credits!");
