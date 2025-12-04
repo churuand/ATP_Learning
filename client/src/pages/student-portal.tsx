@@ -358,22 +358,17 @@ export default function StudentPortal() {
                   <p>Hey {"{Name}"}, welcome to ATP! 🎉</p>
                   <p>
                     I'm Viet Dang from the Student Experience team — super
-                    excited to have you with us!
+                    excited to have you here!
                   </p>
                   <p>
-                    Quick start: check out our{" "}
-                    <span className="text-primary font-medium cursor-pointer hover:underline">
-                      ATP Guide
-                    </span>{" "}
-                    to learn how everything works and get ready for your
-                    internship journey.
+                    To get you started, we’ve gifted you 50 free credits so you can explore and watch everything on the platform. 🎁
                   </p>
                   <p>
-                    Got a question, idea, or found a bug? Just email{" "}
+                    If you’ve got a question, idea, or found a bug, just email us anytime at{" "}
                     <span className="text-primary font-medium cursor-pointer hover:underline">
                       wecare@atp-global.com.au
                     </span>{" "}
-                    anytime.
+                    — we’re here for you.
                   </p>
                   <p>Let's make your career journey amazing! 🚀</p>
                   <p>Cheers!</p>
