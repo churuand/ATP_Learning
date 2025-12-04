@@ -35,6 +35,7 @@ export default function StudentPortal() {
   const [location, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<'all' | 'full' | 'shorts'>('all');
   const [isConsultationOpen, setIsConsultationOpen] = useState(false);
+  const [isWelcomeOpen, setIsWelcomeOpen] = useState(true);
 
   // Mock Data
   const fullVideos = [
@@ -238,6 +239,47 @@ export default function StudentPortal() {
           </button>
         </div>
       </aside>
+      
+      {/* Welcome Dialog */}
+      <Dialog open={isWelcomeOpen} onOpenChange={setIsWelcomeOpen}>
+        <DialogContent className="bg-transparent border-0 shadow-none p-0 max-w-xl w-full flex flex-col items-center justify-center focus:outline-none">
+           <div className="w-full bg-white p-8 rounded-3xl shadow-2xl relative">
+               <div className="flex items-start gap-4">
+                   <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200">
+                       {/* Placeholder for pixel art avatar */}
+                       <img src={`https://api.dicebear.com/7.x/pixel-art/svg?seed=Viet`} alt="Viet Dang" className="w-full h-full object-cover" />
+                   </div>
+                   <div className="space-y-1 flex-1">
+                       <div className="flex items-center gap-2">
+                           <span className="font-bold text-gray-900">Viet Dang</span>
+                           <span className="text-xs text-gray-500">1:06 PM</span>
+                       </div>
+                       
+                       <div className="text-gray-800 leading-relaxed space-y-4 text-[15px]">
+                           <p>Hey {'{Name}'}, welcome to ATP! 🎉</p>
+                           <p>I'm Viet Dang from the Student Experience team — super excited to have you with us!</p>
+                           <p>
+                               Quick start: check out our <span className="text-primary font-medium cursor-pointer hover:underline">ATP Guide</span> to learn how everything works and get ready for your internship journey.
+                           </p>
+                           <p>
+                               Got a question, idea, or found a bug? Just message me or email <span className="text-primary font-medium cursor-pointer hover:underline">wecare@atp-global.com.au</span> anytime.
+                           </p>
+                           <p>Let's make your career journey amazing! 🚀</p>
+                           <p>Cheers!</p>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           
+           <button 
+             onClick={() => setIsWelcomeOpen(false)}
+             className="mt-6 bg-[#6366f1] hover:bg-[#4f46e5] text-white px-8 py-3 rounded-full font-medium text-sm shadow-lg shadow-indigo-500/30 transition-all hover:-translate-y-0.5 flex items-center gap-2"
+           >
+             Got it <span className="text-lg leading-none">→</span>
+           </button>
+        </DialogContent>
+      </Dialog>
+
       {/* Main Content */}
       <main className="flex-1 min-w-0">
         {/* Header */}
