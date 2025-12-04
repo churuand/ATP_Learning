@@ -354,7 +354,7 @@ export default function StudentPortal() {
                     excited to have you here!
                   </p>
                   <p>
-                    To get you started, we’ve gifted you 50 free credits so you can explore and watch everything on the platform. 🎁
+                    To get you started, we’ve gifted you <span className="font-extrabold text-amber-600 text-lg">50 free credits</span> so you can explore and watch everything on the platform. 🎁
                   </p>
                   <p>
                     If you’ve got a question, idea, or found a bug, just email us anytime at{" "}
