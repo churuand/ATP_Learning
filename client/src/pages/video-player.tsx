@@ -108,10 +108,9 @@ export default function VideoPlayer() {
         </div>
 
         <div className="space-y-2 flex-1">
-          <SidebarItem icon={LayoutDashboard} label={<span className="hidden lg:inline">Dashboard</span>} onClick={() => setLocation('/student-portal')} />
           <SidebarItem icon={PlayCircle} label={<span className="hidden lg:inline">Videos</span>} active />
-          <SidebarItem icon={Calendar} label={<span className="hidden lg:inline">Events</span>} />
           <SidebarItem icon={BookOpen} label={<span className="hidden lg:inline">Resources</span>} />
+          <SidebarItem icon={Calendar} label={<span className="hidden lg:inline">Events</span>} />
           <SidebarItem icon={User} label={<span className="hidden lg:inline">Members</span>} />
         </div>
 

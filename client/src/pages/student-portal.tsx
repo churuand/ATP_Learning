@@ -122,10 +122,9 @@ export default function StudentPortal() {
 
         <div className="space-y-2 flex-1">
           <div className="px-4 mb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">Menu</div>
-          <SidebarItem icon={LayoutDashboard} label="Dashboard" />
           <SidebarItem icon={PlayCircle} label="Videos" active />
-          <SidebarItem icon={Calendar} label="Events" />
           <SidebarItem icon={BookOpen} label="Resources" />
+          <SidebarItem icon={Calendar} label="Events" />
           <SidebarItem icon={User} label="Members" />
 
           <div className="px-4 pt-6">
