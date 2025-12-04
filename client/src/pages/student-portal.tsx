@@ -273,7 +273,7 @@ export default function StudentPortal() {
            
            <button 
              onClick={() => setIsWelcomeOpen(false)}
-             className="mt-6 bg-[#6366f1] hover:bg-[#4f46e5] text-white px-8 py-3 rounded-full font-medium text-sm shadow-lg shadow-indigo-500/30 transition-all hover:-translate-y-0.5 flex items-center gap-2"
+             className="mt-6 bg-gradient-to-r from-primary to-red-600 hover:from-red-700 hover:to-red-800 text-white px-8 py-3 rounded-full font-medium text-sm shadow-lg shadow-red-200 transition-all hover:-translate-y-0.5 flex items-center gap-2"
            >
              Got it <span className="text-lg leading-none">→</span>
            </button>
