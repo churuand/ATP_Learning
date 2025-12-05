@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, ChevronRight, ArrowLeft, Upload, Building2, GraduationCap, User, Search, Globe, ArrowRight } from "lucide-react";
 import { clsx } from "clsx";
+import atpLogo from "@assets/image_1764912058849.png";
 
 export default function Login() {
   const [location, setLocation] = useLocation();
@@ -53,9 +54,9 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 font-sans">
-      <div className="w-full max-w-md mb-8 text-center">
+      <div className="w-full max-w-md mb-8 text-center flex justify-center">
         <Link href="/">
-          <span className="text-3xl font-serif font-bold text-primary tracking-tight cursor-pointer">ATP Global.</span>
+          <img src={atpLogo} alt="ATP Global" className="h-16 w-auto object-contain cursor-pointer" />
         </Link>
       </div>
 

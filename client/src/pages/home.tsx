@@ -6,6 +6,8 @@ import studentPortrait from "@assets/generated_images/friendly_female_student_po
 import employerPortrait from "@assets/generated_images/friendly_employer_portrait.png";
 import groupImage from "@assets/generated_images/diverse_group_of_graduates.png";
 
+import atpLogo from "@assets/image_1764912058849.png";
+
 export default function Home() {
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
@@ -19,7 +21,7 @@ export default function Home() {
       <nav className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-gray-100">
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-serif font-bold text-primary tracking-tight">ATP Global.</span>
+            <img src={atpLogo} alt="ATP Global" className="h-12 w-auto object-contain" />
           </div>
           
           <div className="hidden md:flex items-center gap-8 font-medium text-sm text-gray-600">

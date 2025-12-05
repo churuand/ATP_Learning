@@ -46,6 +46,7 @@ import short1 from "@assets/generated_images/quick_career_tip_vertical.png";
 import short2 from "@assets/generated_images/networking_tip_vertical.png";
 import studentPortrait from "@assets/generated_images/friendly_female_student_portrait.png";
 import welcomeAvatar from "@assets/generated_images/pixel_art_avatar_of_asian_male_in_suit.png";
+import atpLogo from "@assets/image_1764912058849.png";
 
 export default function StudentPortal() {
   const [location, setLocation] = useLocation();
@@ -179,9 +180,7 @@ export default function StudentPortal() {
       {/* Sidebar */}
       <aside className="w-72 bg-white border-r border-gray-100 h-screen sticky top-0 hidden lg:flex flex-col p-6 z-20">
         <div className="flex items-center gap-2 mb-10 px-2">
-          <span className="text-2xl font-serif font-bold text-primary tracking-tight">
-            ATP Global.
-          </span>
+          <img src={atpLogo} alt="ATP Global" className="h-12 w-auto object-contain" />
         </div>
 
         <div className="space-y-2 flex-1">
