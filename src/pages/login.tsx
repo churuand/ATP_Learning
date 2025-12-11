@@ -1,378 +1,97 @@
 import { useState } from "react";
-import { useLocation, Link } from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, ChevronRight, ArrowLeft, Upload, Building2, GraduationCap, User, Search, Globe, ArrowRight } from "lucide-react";
-import { clsx } from "clsx";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { getGoogleAuthUrl, getLinkedInAuthUrl } from "@/services/authService";
 import atpLogo from "@assets/image_1764912058849.png";
 
 export default function Login() {
-  const [location, setLocation] = useLocation();
-  const [step, setStep] = useState(1);
-  const [userType, setUserType] = useState<"student" | "employer" | "visitor" | null>(null);
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    nationality: "",
-    degree: "",
-    gradYear: "",
-    country: "",
-    state: "",
-    companyName: "",
-    explorationGoal: "",
-  });
+  const [, setLocation] = useLocation();
+  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleGoogleLogin = () => {
+    setLoading(true);
+    const url = getGoogleAuthUrl();
+    window.location.href = url;
   };
 
-  const handleNext = () => {
-    if (step === 1) {
-      if (formData.fullName && formData.email) setStep(2);
-    } else if (step === 2) {
-      if (userType) setStep(3);
-    } else if (step === 3) {
-      // Submit and redirect
-      setLocation("/student-portal");
-    }
-  };
-
-  const handleBack = () => {
-    if (step > 1) setStep(step - 1);
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0, x: 20 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
-    exit: { opacity: 0, x: -20, transition: { duration: 0.2 } }
+  const handleLinkedInLogin = () => {
+    setLoading(true);
+    const url = getLinkedInAuthUrl();
+    window.location.href = url;
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 font-sans">
-      <div className="w-full max-w-md mb-8 text-center flex justify-center">
-        <Link href="/">
-          <img src={atpLogo} alt="ATP Global" className="h-16 w-auto object-contain cursor-pointer" />
-        </Link>
-      </div>
-
-      <Card className="w-full max-w-2xl shadow-xl border-0 overflow-hidden bg-white rounded-3xl">
-        <div className="h-2 bg-gray-100 w-full">
-          <motion.div 
-            className="h-full bg-primary"
-            initial={{ width: "33%" }}
-            animate={{ width: `${(step / 3) * 100}%` }}
-            transition={{ duration: 0.4 }}
-          />
-        </div>
-
-        <CardHeader className="pt-8 px-8 pb-2">
-          <div className="flex items-center justify-between mb-2">
-            {step > 1 ? (
-              <Button variant="ghost" size="sm" onClick={handleBack} className="text-gray-500 -ml-2 hover:text-gray-900">
-                <ArrowLeft className="w-4 h-4 mr-1" /> Back
-              </Button>
-            ) : (
-              <div />
-            )}
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Step {step} of 3</span>
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/10 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-4 text-center">
+          <div className="flex justify-center">
+            <img src={atpLogo} alt="ATP Global" className="h-16 w-auto object-contain" />
           </div>
-          <CardTitle className="text-3xl font-serif font-bold text-gray-900">
-            {step === 1 && "Let's get started"}
-            {step === 2 && "Tell us about yourself"}
-            {step === 3 && "Final details"}
-          </CardTitle>
-          <CardDescription className="text-base text-gray-500 mt-2">
-            {step === 1 && "Enter your basic information to create your account."}
-            {step === 2 && "Help us customize your experience by selecting your role."}
-            {step === 3 && "Just a few more details to complete your profile."}
+          <CardTitle className="text-2xl">Welcome to ATP Community</CardTitle>
+          <CardDescription>
+            Sign in to access exclusive content, connect with members, and unlock your potential
           </CardDescription>
         </CardHeader>
-
-        <CardContent className="p-8 pt-4">
-          <AnimatePresence mode="wait">
-            {step === 1 && (
-              <motion.div 
-                key="step1"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="space-y-5"
-              >
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input 
-                    id="fullName" 
-                    placeholder="John Doe" 
-                    className="h-12 bg-gray-50 border-gray-200 focus:bg-white transition-all"
-                    value={formData.fullName}
-                    onChange={(e) => handleInputChange("fullName", e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="john@example.com" 
-                    className="h-12 bg-gray-50 border-gray-200 focus:bg-white transition-all"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="nationality">Country of Origin / Nationality <span className="text-gray-400 font-normal">(Optional)</span></Label>
-                  <Select onValueChange={(val) => handleInputChange("nationality", val)} value={formData.nationality}>
-                    <SelectTrigger className="h-12 bg-gray-50 border-gray-200">
-                      <SelectValue placeholder="Select country" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="au">Australia</SelectItem>
-                      <SelectItem value="vn">Vietnam</SelectItem>
-                      <SelectItem value="cn">China</SelectItem>
-                      <SelectItem value="in">India</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </motion.div>
-            )}
-
-            {step === 2 && (
-              <motion.div 
-                key="step2"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="space-y-4"
-              >
-                <p className="text-sm font-medium text-gray-700 mb-2">What best describes you?</p>
-                
-                <button 
-                  onClick={() => setUserType("student")}
-                  className={clsx(
-                    "w-full p-4 rounded-2xl border-2 flex items-center gap-4 transition-all text-left group",
-                    userType === "student" 
-                      ? "border-primary bg-primary/5 shadow-md" 
-                      : "border-gray-100 bg-white hover:border-primary/30 hover:bg-gray-50"
-                  )}
-                >
-                  <div className={clsx(
-                    "w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors",
-                    userType === "student" ? "bg-primary text-white" : "bg-gray-100 text-gray-500 group-hover:bg-primary/10 group-hover:text-primary"
-                  )}>
-                    <GraduationCap className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900">Student</div>
-                    <div className="text-sm text-gray-500">I'm studying or recently graduated</div>
-                  </div>
-                  {userType === "student" && <Check className="w-5 h-5 text-primary ml-auto" />}
-                </button>
-
-                <button 
-                  onClick={() => setUserType("employer")}
-                  className={clsx(
-                    "w-full p-4 rounded-2xl border-2 flex items-center gap-4 transition-all text-left group",
-                    userType === "employer" 
-                      ? "border-primary bg-primary/5 shadow-md" 
-                      : "border-gray-100 bg-white hover:border-primary/30 hover:bg-gray-50"
-                  )}
-                >
-                  <div className={clsx(
-                    "w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors",
-                    userType === "employer" ? "bg-primary text-white" : "bg-gray-100 text-gray-500 group-hover:bg-primary/10 group-hover:text-primary"
-                  )}>
-                    <Building2 className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900">Employer</div>
-                    <div className="text-sm text-gray-500">I'm hiring or looking for talent</div>
-                  </div>
-                  {userType === "employer" && <Check className="w-5 h-5 text-primary ml-auto" />}
-                </button>
-
-                <button 
-                  onClick={() => setUserType("visitor")}
-                  className={clsx(
-                    "w-full p-4 rounded-2xl border-2 flex items-center gap-4 transition-all text-left group",
-                    userType === "visitor" 
-                      ? "border-primary bg-primary/5 shadow-md" 
-                      : "border-gray-100 bg-white hover:border-primary/30 hover:bg-gray-50"
-                  )}
-                >
-                  <div className={clsx(
-                    "w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors",
-                    userType === "visitor" ? "bg-primary text-white" : "bg-gray-100 text-gray-500 group-hover:bg-primary/10 group-hover:text-primary"
-                  )}>
-                    <Search className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900">Visitor</div>
-                    <div className="text-sm text-gray-500">Researching internship opportunities</div>
-                  </div>
-                  {userType === "visitor" && <Check className="w-5 h-5 text-primary ml-auto" />}
-                </button>
-              </motion.div>
-            )}
-
-            {step === 3 && (
-              <motion.div 
-                key="step3"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="space-y-5"
-              >
-                {userType === "student" && (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="degree">Degree / Major</Label>
-                      <Input 
-                        id="degree" 
-                        placeholder="e.g. Bachelor of Computer Science" 
-                        className="h-12 bg-gray-50 border-gray-200"
-                        value={formData.degree}
-                        onChange={(e) => handleInputChange("degree", e.target.value)}
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="gradYear">Graduation Year</Label>
-                        <Select onValueChange={(val) => handleInputChange("gradYear", val)} value={formData.gradYear}>
-                          <SelectTrigger className="h-12 bg-gray-50 border-gray-200">
-                            <SelectValue placeholder="Year" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="2023">2023</SelectItem>
-                            <SelectItem value="2024">2024</SelectItem>
-                            <SelectItem value="2025">2025</SelectItem>
-                            <SelectItem value="2026">2026</SelectItem>
-                            <SelectItem value="2027">2027</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                         <Label htmlFor="country">Country</Label>
-                         <Select onValueChange={(val) => handleInputChange("country", val)} value={formData.country}>
-                          <SelectTrigger className="h-12 bg-gray-50 border-gray-200">
-                            <SelectValue placeholder="Select" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="au">Australia</SelectItem>
-                            <SelectItem value="nz">New Zealand</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="state">State</Label>
-                      <Select onValueChange={(val) => handleInputChange("state", val)} value={formData.state}>
-                        <SelectTrigger className="h-12 bg-gray-50 border-gray-200">
-                          <SelectValue placeholder="Select State" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="nsw">New South Wales</SelectItem>
-                          <SelectItem value="vic">Victoria</SelectItem>
-                          <SelectItem value="qld">Queensland</SelectItem>
-                          <SelectItem value="wa">Western Australia</SelectItem>
-                          <SelectItem value="sa">South Australia</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </>
-                )}
-
-                {userType === "employer" && (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="companyName">Company Name <span className="text-gray-400 font-normal">(Optional)</span></Label>
-                      <Input 
-                        id="companyName" 
-                        placeholder="Your Organization" 
-                        className="h-12 bg-gray-50 border-gray-200"
-                        value={formData.companyName}
-                        onChange={(e) => handleInputChange("companyName", e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="explore">What do you want to explore?</Label>
-                      <Select onValueChange={(val) => handleInputChange("explorationGoal", val)} value={formData.explorationGoal}>
-                        <SelectTrigger className="h-12 bg-gray-50 border-gray-200">
-                          <SelectValue placeholder="Select option" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="internships">Finding internships</SelectItem>
-                          <SelectItem value="learning">Learning about Australia</SelectItem>
-                          <SelectItem value="advice">Career advice</SelectItem>
-                          <SelectItem value="content">Exploring content</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </>
-                )}
-
-                {userType === "visitor" && (
-                   <div className="space-y-2">
-                    <Label htmlFor="explore">What do you want to explore?</Label>
-                    <Select onValueChange={(val) => handleInputChange("explorationGoal", val)} value={formData.explorationGoal}>
-                      <SelectTrigger className="h-12 bg-gray-50 border-gray-200">
-                        <SelectValue placeholder="Select option" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="internships">Finding internships</SelectItem>
-                        <SelectItem value="learning">Learning about Australia</SelectItem>
-                        <SelectItem value="advice">Career advice</SelectItem>
-                        <SelectItem value="content">Exploring content</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                {/* CV Upload for everyone or specific roles (Student/Visitor usually) */}
-                {(userType === "student" || userType === "visitor") && (
-                  <div className="pt-2">
-                    <Label className="mb-2 block">Drop CV <span className="text-gray-400 font-normal">(Optional)</span></Label>
-                    <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 hover:border-primary/30 transition-colors cursor-pointer">
-                      <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mb-3 text-gray-400">
-                        <Upload className="w-5 h-5" />
-                      </div>
-                      <p className="text-sm font-medium text-gray-900">Click to upload or drag and drop</p>
-                      <p className="text-xs text-gray-500 mt-1">PDF, DOCX up to 10MB</p>
-                    </div>
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </CardContent>
-
-        <CardFooter className="p-8 pt-0 flex items-center justify-between">
-          {step === 1 && (
-             <div className="text-sm text-gray-500">
-               Already have an account? <span className="text-primary font-bold cursor-pointer hover:underline">Log in</span>
-             </div>
-          )}
-          <Button 
-            onClick={handleNext} 
-            className="ml-auto rounded-full bg-primary hover:bg-primary/90 text-white px-8 h-12 shadow-lg shadow-primary/20"
-            disabled={
-              (step === 1 && (!formData.fullName || !formData.email)) ||
-              (step === 2 && !userType)
-            }
+        <CardContent className="space-y-4">
+          <Button
+            onClick={handleGoogleLogin}
+            disabled={loading}
+            className="w-full"
+            variant="outline"
+            size="lg"
           >
-            {step === 3 ? "Complete Setup" : "Next Step"}
-            {step !== 3 && <ChevronRight className="w-4 h-4 ml-2" />}
+            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              />
+              <path
+                fill="currentColor"
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              />
+              <path
+                fill="currentColor"
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              />
+              <path
+                fill="currentColor"
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              />
+            </svg>
+            Continue with Google
           </Button>
-        </CardFooter>
+
+          <Button
+            onClick={handleLinkedInLogin}
+            disabled={loading}
+            className="w-full"
+            variant="outline"
+            size="lg"
+          >
+            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+            </svg>
+            Continue with LinkedIn
+          </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Secure OAuth Authentication
+              </span>
+            </div>
+          </div>
+
+          <p className="text-sm text-muted-foreground text-center">
+            By continuing, you agree to our Terms of Service and Privacy Policy
+          </p>
+        </CardContent>
       </Card>
     </div>
   );

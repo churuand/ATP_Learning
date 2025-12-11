@@ -2,12 +2,6 @@ import { useLocation, useRoute } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
-  LayoutDashboard, 
-  PlayCircle, 
-  Calendar, 
-  BookOpen, 
-  User, 
-  LogOut, 
   Search, 
   Bell, 
   ThumbsUp,
@@ -15,10 +9,17 @@ import {
   Share2,
   MoreHorizontal,
   Play,
-  Clock
+  Clock,
+  Loader2,
+  Coins
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { clsx } from "clsx";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getVideoById, type Video } from "@/services/videoService";
+import Sidebar from "@/components/Sidebar";
+import PurchaseVideoDialog from "@/components/PurchaseVideoDialog";
 
 // Mock Assets
 import masterclass1 from "@assets/generated_images/interview_masterclass_thumbnail.png";
@@ -27,55 +28,85 @@ import short1 from "@assets/generated_images/quick_career_tip_vertical.png";
 import short2 from "@assets/generated_images/networking_tip_vertical.png";
 import studentPortrait from "@assets/generated_images/friendly_female_student_portrait.png"; 
 
+// Helper function to extract ID from slug-id format (e.g., "demo-slug-5" -> 5)
+const extractIdFromSlug = (slugId: string | undefined): number | null => {
+  if (!slugId) return null;
+  const parts = slugId.split('-');
+  const lastPart = parts[parts.length - 1];
+  const id = parseInt(lastPart);
+  return isNaN(id) ? null : id;
+};
+
+// Helper function to generate slug from title
+const generateSlug = (title: string): string => {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
+
+// Helper function to create video URL with slug and id
+const createVideoUrl = (video: Video): string => {
+  const slug = generateSlug(video.title);
+  return `/video/${slug}-${video.id}`;
+};
+
 export default function VideoPlayer() {
-  const [match, params] = useRoute("/video/:id");
+  const [match, params] = useRoute("/video/:slugId");
   const [location, setLocation] = useLocation();
-  const videoId = params?.id;
+  const videoId = extractIdFromSlug(params?.slugId);
+  const [showPurchaseDialog, setShowPurchaseDialog] = useState(false);
 
-  // Mock Data (Duplicated for mockup simplicity)
-  const currentVideo = {
-    id: 1,
-    title: "Mastering the Australian Interview Process",
-    author: "Sarah Jenkins",
-    role: "HR Director",
-    subscribers: "12.5k",
-    views: "15k views",
-    date: "2 days ago",
-    description: "Join Sarah Jenkins, HR Director at TechCorp, as she breaks down exactly what Australian employers are looking for in cultural fit interviews. In this masterclass, we cover behavioral questions, the STAR method, and how to showcase your soft skills effectively.",
-    image: masterclass1,
-    tags: ["Interview", "Soft Skills"]
-  };
+  // Fetch current video details from API
+  const { data: videoData, isLoading, error } = useQuery({
+    queryKey: ['video', videoId],
+    queryFn: () => videoId ? getVideoById(videoId) : Promise.reject('No video ID'),
+    enabled: !!videoId,
+  });
 
-  const recommendedVideos = [
-    {
-      id: 2,
-      title: "Resume Workshop: Stand Out from the Crowd",
-      author: "David Chen",
-      views: "8.2k views",
-      date: "5 days ago",
-      duration: "32:10",
-      image: masterclass2
-    },
-    {
-      id: 3,
-      title: "Networking Strategies for Introverts",
-      author: "Emily Wilson",
-      views: "5.1k views",
-      date: "1 week ago",
-      duration: "28:45",
-      image: masterclass1 // Reusing
-    },
-    {
-      id: 4,
-      title: "Salary Negotiation Tactics",
-      author: "Mark Thompson",
-      views: "12k views",
-      date: "2 weeks ago",
-      duration: "15:20",
-      image: masterclass2 // Reusing
+  const currentVideo = videoData?.video;
+  const isPurchased = videoData?.is_purchased || false;
+  const playlistVideos = videoData?.playlist_videos || [];
+
+  // Auto-show purchase dialog if video is not purchased
+  // Must be called before any early returns (Rules of Hooks)
+  useEffect(() => {
+    if (currentVideo && !isPurchased) {
+      setShowPurchaseDialog(true);
     }
-  ];
+  }, [currentVideo, isPurchased]);
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error || !currentVideo) {
+    return (
+      <div className="min-h-screen bg-background flex">
+        <Sidebar activePage="videos" />
+        <div className="flex-1 flex items-center justify-center flex-col gap-4">
+          <p className="text-xl text-gray-600">Video not found</p>
+          <Button onClick={() => setLocation('/student-portal')} className="bg-primary text-white">
+            Back to Portal
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Get recommended videos (other videos from playlist, excluding current)
+  const recommendedVideos = playlistVideos.filter((v: Video) => v.id !== currentVideo.id).slice(0, 3);
+
+  // Mock shorts for now (can be filtered from playlist or separate API call)
   const shorts = [
     { id: 101, title: "The Perfect Handshake", views: "50k", image: short1 },
     { id: 102, title: "Elevator Pitch 101", views: "32k", image: short2 },
@@ -83,43 +114,10 @@ export default function VideoPlayer() {
     { id: 104, title: "Zoom Etiquette", views: "22k", image: short2 }
   ];
 
-  const SidebarItem = ({ icon: Icon, label, active = false, onClick }: any) => (
-    <button 
-      onClick={onClick}
-      className={clsx(
-        "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm",
-        active 
-          ? "bg-primary text-white shadow-lg shadow-primary/20" 
-          : "text-gray-500 hover:bg-secondary hover:text-primary"
-      )}
-    >
-      <Icon className="w-5 h-5" />
-      {label}
-    </button>
-  );
-
   return (
     <div className="min-h-screen bg-background font-sans text-foreground flex">
-      {/* Sidebar (Collapsed on smaller screens like YouTube) */}
-      <aside className="w-20 lg:w-64 bg-white border-r border-gray-100 h-screen sticky top-0 hidden md:flex flex-col p-4 z-20 shrink-0">
-        <div className="flex items-center gap-2 mb-8 px-2 justify-center lg:justify-start cursor-pointer" onClick={() => setLocation('/student-portal')}>
-           <span className="text-2xl font-serif font-bold text-primary tracking-tight hidden lg:block">ATP Global.</span>
-           <span className="text-2xl font-serif font-bold text-primary tracking-tight lg:hidden">ATP</span>
-        </div>
-
-        <div className="space-y-2 flex-1">
-          <SidebarItem icon={PlayCircle} label={<span className="hidden lg:inline">Videos</span>} active />
-          <SidebarItem icon={BookOpen} label={<span className="hidden lg:inline">Resources</span>} />
-          <SidebarItem icon={Calendar} label={<span className="hidden lg:inline">Events</span>} />
-          <SidebarItem icon={User} label={<span className="hidden lg:inline">Members</span>} />
-        </div>
-
-        <div className="mt-auto pt-6 border-t border-gray-100 flex justify-center lg:justify-start">
-          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/10 cursor-pointer">
-            <img src={studentPortrait} alt="Profile" className="w-full h-full object-cover" />
-          </div>
-        </div>
-      </aside>
+      {/* Sidebar */}
+      <Sidebar activePage="videos" />
 
       {/* Main Content */}
       <main className="flex-1 min-w-0 flex flex-col">
@@ -155,20 +153,58 @@ export default function VideoPlayer() {
             <div className="min-w-0">
               {/* Video Player */}
               <div className="aspect-video bg-black rounded-2xl overflow-hidden shadow-lg relative group">
-                <img src={currentVideo.image} alt={currentVideo.title} className="w-full h-full object-cover opacity-80" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer group-hover:scale-110 transition-transform">
-                        <Play className="w-8 h-8 text-white fill-current ml-1" />
+                {isPurchased ? (
+                  // Show actual video if purchased
+                  currentVideo.youtube_video_id ? (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${currentVideo.youtube_video_id}?autoplay=0`}
+                      title={currentVideo.title}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <>
+                      <img src={currentVideo.thumbnail_url || masterclass1} alt={currentVideo.title} className="w-full h-full object-cover opacity-80" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer group-hover:scale-110 transition-transform">
+                              <Play className="w-8 h-8 text-white fill-current ml-1" />
+                          </div>
+                      </div>
+                      {/* Fake Controls */}
+                      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/80 to-transparent flex items-end px-4 pb-3 gap-4">
+                          <Play className="w-5 h-5 text-white fill-current" />
+                          <div className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
+                              <div className="w-1/3 h-full bg-primary"></div>
+                          </div>
+                          <span className="text-white text-xs">14:20 / {currentVideo.duration ? `${Math.floor(currentVideo.duration / 60)}:${(currentVideo.duration % 60).toString().padStart(2, '0')}` : '45:00'}</span>
+                      </div>
+                    </>
+                  )
+                ) : (
+                  // Show blurred preview if not purchased
+                  <>
+                    <img src={currentVideo.thumbnail_url || masterclass1} alt={currentVideo.title} className="w-full h-full object-cover blur-md" />
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
+                      <div className="text-center space-y-4 p-8">
+                        <div className="w-20 h-20 mx-auto bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
+                          <Coins className="w-10 h-10 text-white" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-white">Purchase to Watch</h3>
+                        <p className="text-white/80 max-w-sm">
+                          Unlock this masterclass for {currentVideo.price_credit} credits
+                        </p>
+                        <Button 
+                          onClick={() => setShowPurchaseDialog(true)}
+                          className="bg-white text-primary hover:bg-gray-100 font-bold"
+                        >
+                          <Coins className="w-4 h-4 mr-2" />
+                          Purchase Now
+                        </Button>
+                      </div>
                     </div>
-                </div>
-                {/* Fake Controls */}
-                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/80 to-transparent flex items-end px-4 pb-3 gap-4">
-                    <Play className="w-5 h-5 text-white fill-current" />
-                    <div className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
-                        <div className="w-1/3 h-full bg-primary"></div>
-                    </div>
-                    <span className="text-white text-xs">14:20 / 45:00</span>
-                </div>
+                  </>
+                )}
               </div>
 
               {/* Video Info */}
@@ -180,11 +216,12 @@ export default function VideoPlayer() {
                         <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-primary font-bold overflow-hidden">
                             {/* Placeholder avatar */}
                             <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
-                                {currentVideo.author[0]}
+                                {currentVideo.mentor ? currentVideo.mentor[0] : 'M'}
                             </div>
                         </div>
                         <div>
-                            <div className="font-bold text-gray-900 text-sm">{currentVideo.author}</div>
+                            <div className="font-bold text-gray-900 text-sm">{currentVideo.mentor || 'ATP Mentor'}</div>
+                            <div className="text-xs text-gray-500">{currentVideo.category?.name || 'Career Coach'}</div>
                         </div>
                     </div>
 
@@ -205,11 +242,22 @@ export default function VideoPlayer() {
 
                 {/* Description Box */}
                 <div className="mt-4 bg-secondary/30 rounded-xl p-4 text-sm hover:bg-secondary/50 transition-colors cursor-pointer">
-                    <div className="font-bold text-gray-900 mb-2">{currentVideo.views} • {currentVideo.date}</div>
+                    <div className="font-bold text-gray-900 mb-2">
+                      {currentVideo.category?.name || 'Career Development'} • {new Date(currentVideo.created_at).toLocaleDateString()}
+                    </div>
                     <p className="text-gray-700 leading-relaxed">
-                        {currentVideo.description}
+                        {currentVideo.description || 'Watch this masterclass to enhance your career development skills.'}
                         <span className="font-bold text-gray-900 block mt-1">...more</span>
                     </p>
+                    {currentVideo.tags && currentVideo.tags.length > 0 && (
+                      <div className="flex gap-2 mt-3 flex-wrap">
+                        {currentVideo.tags.map((tag) => (
+                          <span key={tag.id} className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
+                            #{tag.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                 </div>
 
                 {/* Comments Section Placeholder */}
@@ -237,16 +285,22 @@ export default function VideoPlayer() {
 
                 {/* Up Next List (Mixed with Shorts) */}
                 <div className="flex flex-col gap-4">
-                    {recommendedVideos.slice(0, 1).map((video) => (
-                         <div key={video.id} className="flex gap-3 cursor-pointer group">
+                    {recommendedVideos.slice(0, 1).map((video: Video) => (
+                         <div 
+                           key={video.id} 
+                           className="flex gap-3 cursor-pointer group"
+                           onClick={() => setLocation(createVideoUrl(video))}
+                         >
                             <div className="relative w-40 aspect-video rounded-xl overflow-hidden shrink-0">
-                                <img src={video.image} alt={video.title} className="w-full h-full object-cover group-hover:opacity-90" />
-                                <span className="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] px-1 rounded font-medium">{video.duration}</span>
+                                <img src={video.thumbnail_url || masterclass1} alt={video.title} className="w-full h-full object-cover group-hover:opacity-90" />
+                                <span className="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] px-1 rounded font-medium">
+                                  {video.duration ? `${Math.floor(video.duration / 60)}:${(video.duration % 60).toString().padStart(2, '0')}` : 'N/A'}
+                                </span>
                             </div>
                             <div className="flex flex-col gap-1 min-w-0">
                                 <h4 className="font-bold text-sm text-gray-900 line-clamp-2 group-hover:text-primary leading-tight">{video.title}</h4>
-                                <div className="text-xs text-gray-500">{video.author}</div>
-                                <div className="text-xs text-gray-500">{video.views} • {video.date}</div>
+                                <div className="text-xs text-gray-500">{video.mentor || 'ATP Mentor'}</div>
+                                <div className="text-xs text-gray-500">{video.category?.name || 'Career Development'}</div>
                             </div>
                         </div>
                     ))}
@@ -276,26 +330,42 @@ export default function VideoPlayer() {
                         </div>
                     </div>
 
-                    {recommendedVideos.slice(1).map((video) => (
-                         <div key={video.id} className="flex gap-3 cursor-pointer group">
+                    {recommendedVideos.slice(1).map((video: Video) => (
+                         <div 
+                           key={video.id} 
+                           className="flex gap-3 cursor-pointer group"
+                           onClick={() => setLocation(createVideoUrl(video))}
+                         >
                             <div className="relative w-40 aspect-video rounded-xl overflow-hidden shrink-0">
-                                <img src={video.image} alt={video.title} className="w-full h-full object-cover group-hover:opacity-90" />
-                                <span className="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] px-1 rounded font-medium">{video.duration}</span>
+                                <img src={video.thumbnail_url || masterclass1} alt={video.title} className="w-full h-full object-cover group-hover:opacity-90" />
+                                <span className="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] px-1 rounded font-medium">
+                                  {video.duration ? `${Math.floor(video.duration / 60)}:${(video.duration % 60).toString().padStart(2, '0')}` : 'N/A'}
+                                </span>
                             </div>
                             <div className="flex flex-col gap-1 min-w-0">
                                 <h4 className="font-bold text-sm text-gray-900 line-clamp-2 group-hover:text-primary leading-tight">{video.title}</h4>
-                                <div className="text-xs text-gray-500">{video.author}</div>
-                                <div className="text-xs text-gray-500">{video.views} • {video.date}</div>
+                                <div className="text-xs text-gray-500">{video.mentor || 'ATP Mentor'}</div>
+                                <div className="text-xs text-gray-500">{video.category?.name || 'Career Development'}</div>
                             </div>
                         </div>
                     ))}
                 </div>
-
             </div>
-
           </div>
         </div>
       </main>
+
+      {/* Purchase Dialog */}
+      <PurchaseVideoDialog
+        open={showPurchaseDialog}
+        onOpenChange={setShowPurchaseDialog}
+        video={currentVideo}
+        type="full"
+        onSuccess={() => {
+          // Video will automatically unlock after successful purchase
+          // because the query will be invalidated and refetched
+        }}
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,42 +18,59 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  LayoutDashboard,
-  PlayCircle,
-  Calendar,
-  BookOpen,
-  User,
-  LogOut,
-  Search,
-  Bell,
-  Filter,
   Clock,
-  MoreVertical,
   Play,
   HelpCircle,
   Lock,
   Coins,
-  CheckCircle2,
+  Loader2,
+  Search,
+  PlayCircle,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { clsx } from "clsx";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getVideos, checkPurchaseStatus } from "@/services/videoService";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import Sidebar from "@/components/Sidebar";
+import PurchaseVideoDialog from "@/components/PurchaseVideoDialog";
 
 // Mock Assets (replacing with generated ones later)
 import masterclass1 from "@assets/generated_images/interview_masterclass_thumbnail.png";
-import masterclass2 from "@assets/generated_images/resume_workshop_thumbnail.png";
 import short1 from "@assets/generated_images/quick_career_tip_vertical.png";
-import short2 from "@assets/generated_images/networking_tip_vertical.png";
-import studentPortrait from "@assets/generated_images/friendly_female_student_portrait.png";
 import welcomeAvatar from "@assets/generated_images/pixel_art_avatar_of_asian_male_in_suit.png";
-import atpLogo from "@assets/image_1764912058849.png";
+
+// Helper function to generate slug from title
+const generateSlug = (title: string): string => {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+};
+
+// Helper function to create video URL with slug and id
+const createVideoUrl = (video: any, type: 'full' | 'short'): string => {
+  const slug = generateSlug(video.title);
+  const basePath = type === 'full' ? '/video' : '/quick-tips';
+  return `${basePath}/${slug}-${video.id}`;
+};
 
 export default function StudentPortal() {
   const [location, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<"all" | "full" | "shorts">("all");
-  const [isConsultationOpen, setIsConsultationOpen] = useState(false);
-  const [isWelcomeOpen, setIsWelcomeOpen] = useState(true);
-  const [userCredits, setUserCredits] = useState(100); // Initial credits
+  const { member, refreshMember } = useAuth();
+  const userCredits = member?.total_credit || 0;
+  const queryClient = useQueryClient();
+  const [checkingPurchase, setCheckingPurchase] = useState(false);
+
+  // Check if user has seen welcome message
+  const hasSeenWelcome = localStorage.getItem('atp_welcome_seen') === 'true';
+  const [isWelcomeOpen, setIsWelcomeOpen] = useState(!hasSeenWelcome);
 
   // Purchase Dialog State
   const [purchaseDialog, setPurchaseDialog] = useState<{
@@ -66,318 +83,81 @@ export default function StudentPortal() {
     type: 'full'
   });
 
-  // Mock Data
-  const fullVideos = [
-    {
-      id: 1,
-      title: "Mastering the Australian Interview Process",
-      author: "Sarah Jenkins",
-      role: "HR Director",
-      duration: "45 min",
-      category: "Career Development",
-      image: masterclass1,
-      tags: ["Interview", "Soft Skills"],
-      cost: 10
-    },
-    {
-      id: 2,
-      title: "Resume Workshop: Stand Out from the Crowd",
-      author: "David Chen",
-      role: "Senior Recruiter",
-      duration: "32 min",
-      category: "Documentation",
-      image: masterclass2,
-      tags: ["Resume", "Application"],
-      cost: 10
-    },
-    {
-      id: 3,
-      title: "Networking Strategies for Introverts",
-      author: "Emily Wilson",
-      role: "Career Coach",
-      duration: "28 min",
-      category: "Networking",
-      image: masterclass1, // Reusing for mockup
-      tags: ["Networking", "Communication"],
-      cost: 10
-    },
-  ];
+  // Fetch videos from API
+  const { data: videosData, isLoading: isLoadingVideos, error: videosError } = useQuery({
+    queryKey: ['videos'],
+    queryFn: () => getVideos(),
+  });
 
-  const shortVideos = [
-    {
-      id: 101,
-      title: "The Perfect Handshake",
-      duration: "45 sec",
-      image: short1,
-      cost: 1
-    },
-    {
-      id: 102,
-      title: "Elevator Pitch 101",
-      duration: "58 sec",
-      image: short2,
-      cost: 1
-    },
-    {
-      id: 103,
-      title: "Dress for Success",
-      duration: "1 min",
-      image: short1, // Reusing
-      cost: 1
-    },
-    {
-      id: 104,
-      title: "Zoom Etiquette",
-      duration: "30 sec",
-      image: short2, // Reusing
-      cost: 1
-    },
-  ];
+  // Extract videos from the new flat response structure
+  const allVideos = videosData?.videos || [];
 
-  const handleVideoClick = (video: any, type: 'full' | 'short') => {
-    setPurchaseDialog({
-      isOpen: true,
-      video,
-      type
-    });
-  };
+  const fullVideos = allVideos.filter(video => !video.is_short);
+  const shortVideos = allVideos.filter(video => video.is_short);
 
-  const handlePurchase = () => {
-    if (purchaseDialog.video) {
-      const cost = purchaseDialog.type === 'full' ? 10 : 1;
-      if (userCredits >= cost) {
-        setUserCredits(prev => prev - cost);
-        setPurchaseDialog(prev => ({ ...prev, isOpen: false }));
-        
-        if (purchaseDialog.type === 'full') {
-          setLocation(`/video/${purchaseDialog.video.id}`);
-        } else {
-          setLocation(`/quick-tips/${purchaseDialog.video.id}`);
-        }
+  const handleVideoClick = async (video: any, type: 'full' | 'short') => {
+    setCheckingPurchase(true);
+    try {
+      // Check if video is already purchased
+      const purchaseStatus = await checkPurchaseStatus(video.id);
+      
+      if (purchaseStatus.purchased) {
+        // Already purchased, navigate directly to video player with slug-id format
+        const videoUrl = createVideoUrl(video, type);
+        setLocation(videoUrl);
       } else {
-        alert("Insufficient credits!");
+        // Not purchased, show purchase dialog
+        setPurchaseDialog({
+          isOpen: true,
+          video,
+          type
+        });
       }
+    } catch (error: any) {
+      console.error('Error checking purchase status:', error);
+      // If error, show purchase dialog as fallback
+      setPurchaseDialog({
+        isOpen: true,
+        video,
+        type
+      });
+    } finally {
+      setCheckingPurchase(false);
     }
   };
 
-  const SidebarItem = ({ icon: Icon, label, active = false, onClick }: any) => (
-    <button
-      onClick={onClick}
-      className={clsx(
-        "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm",
-        active
-          ? "bg-primary text-white shadow-lg shadow-primary/20"
-          : "text-gray-500 hover:bg-secondary hover:text-primary",
-      )}
-    >
-      <Icon className="w-5 h-5" />
-      {label}
-    </button>
-  );
+  const handlePurchaseSuccess = () => {
+    // Navigate to video player with slug-id format after successful purchase
+    if (purchaseDialog.video) {
+      const videoUrl = createVideoUrl(purchaseDialog.video, purchaseDialog.type);
+      setLocation(videoUrl);
+    }
+  };
+
+  const handleCloseWelcome = () => {
+    localStorage.setItem('atp_welcome_seen', 'true');
+    setIsWelcomeOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-secondary/30 font-sans text-foreground flex">
       {/* Sidebar */}
-      <aside className="w-72 bg-white border-r border-gray-100 h-screen sticky top-0 hidden lg:flex flex-col p-6 z-20">
-        <div className="flex items-center gap-2 mb-10 px-2">
-          <img src={atpLogo} alt="ATP Global" className="h-12 w-auto object-contain" />
-        </div>
+      <Sidebar activePage="videos" />
 
-        <div className="space-y-2 flex-1">
-          <div className="px-4 mb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">
-            Menu
-          </div>
-          <SidebarItem icon={PlayCircle} label="Videos" active />
-          <SidebarItem icon={BookOpen} label="Resources" />
-          <SidebarItem icon={Calendar} label="Events" />
-          <SidebarItem icon={User} label="Members" />
-
-          <div className="px-4 pt-6">
-            <Dialog
-              open={isConsultationOpen}
-              onOpenChange={setIsConsultationOpen}
-            >
-              <DialogTrigger asChild>
-                <Button className="w-full bg-gradient-to-r from-primary to-red-600 hover:from-red-700 hover:to-red-800 text-white shadow-lg shadow-red-200 border-0">
-                  Book Consultation
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-transparent border-0 shadow-none p-0 max-w-4xl w-full flex flex-col items-center justify-center overflow-hidden">
-                <div className="w-full bg-[#c71018] p-8 md:p-12 text-center rounded-t-3xl relative z-10">
-                  <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-4">
-                    Book your free internship <br /> placement session.
-                  </h2>
-                  <p className="text-white/80 max-w-2xl mx-auto text-lg font-light leading-relaxed">
-                    No commitment. We'll understand your goals, review your CV,
-                    and suggest the best internship options for you.
-                  </p>
-                </div>
-
-                <div className="w-full bg-white p-8 md:p-12 rounded-b-3xl -mt-4 relative z-20 shadow-2xl max-w-3xl mx-auto">
-                  <form
-                    className="space-y-6"
-                    onSubmit={(e) => e.preventDefault()}
-                  >
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="fullName"
-                          className="text-gray-700 font-medium"
-                        >
-                          Full Name
-                        </Label>
-                        <Input
-                          id="fullName"
-                          placeholder="John Doe"
-                          className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="email"
-                          className="text-gray-700 font-medium"
-                        >
-                          Email Address
-                        </Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="john@example.com"
-                          className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="country"
-                          className="text-gray-700 font-medium"
-                        >
-                          Country
-                        </Label>
-                        <Input
-                          id="country"
-                          placeholder="Current Country"
-                          className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="city"
-                          className="text-gray-700 font-medium"
-                        >
-                          City
-                        </Label>
-                        <Input
-                          id="city"
-                          placeholder="Current City"
-                          className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="degree"
-                          className="text-gray-700 font-medium"
-                        >
-                          Degree / Major
-                        </Label>
-                        <Input
-                          id="degree"
-                          placeholder="e.g. Master of IT"
-                          className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="gradYear"
-                          className="text-gray-700 font-medium"
-                        >
-                          Graduation Year
-                        </Label>
-                        <Input
-                          id="gradYear"
-                          placeholder="e.g. 2025"
-                          className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="startMonth"
-                        className="text-gray-700 font-medium"
-                      >
-                        Preferred Internship Start Month
-                      </Label>
-                      <Select>
-                        <SelectTrigger className="bg-gray-50 border-gray-200 h-12 rounded-xl focus:ring-primary/20">
-                          <SelectValue placeholder="Select Month" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="jan">January</SelectItem>
-                          <SelectItem value="feb">February</SelectItem>
-                          <SelectItem value="mar">March</SelectItem>
-                          <SelectItem value="apr">April</SelectItem>
-                          <SelectItem value="may">May</SelectItem>
-                          <SelectItem value="jun">June</SelectItem>
-                          <SelectItem value="jul">July</SelectItem>
-                          <SelectItem value="aug">August</SelectItem>
-                          <SelectItem value="sep">September</SelectItem>
-                          <SelectItem value="oct">October</SelectItem>
-                          <SelectItem value="nov">November</SelectItem>
-                          <SelectItem value="dec">December</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <Button className="w-full bg-[#bf360c] hover:bg-[#a02e0a] text-white h-14 text-lg font-bold rounded-full shadow-lg shadow-orange-900/20 mt-4">
-                      Book My Session
-                    </Button>
-
-                    <div className="flex items-center justify-center gap-2 text-gray-400 text-xs mt-4">
-                      <Lock className="w-3 h-3" />
-                      <span>
-                        Your details are kept private and only used to contact
-                        you about internship options.
-                      </span>
-                    </div>
-                  </form>
-                </div>
-              </DialogContent>
-            </Dialog>
+      {/* Loading Overlay */}
+      {checkingPurchase && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-6 flex flex-col items-center gap-3 shadow-xl">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <p className="text-sm font-medium text-gray-600">Checking video status...</p>
           </div>
         </div>
-
-        <div className="mt-auto pt-6 border-t border-gray-100">
-          <div className="flex items-center gap-3 px-4 mb-6">
-            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/10">
-              <img
-                src={studentPortrait}
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-bold text-gray-900 truncate">
-                Việt Nguyen
-              </div>
-              <div className="text-xs text-gray-500 truncate">
-                Student Member
-              </div>
-              <div className="flex items-center gap-1.5 mt-1.5 text-xs font-medium text-amber-600 bg-amber-50 w-fit px-2.5 py-1 rounded-full border border-amber-100">
-                <Coins className="w-3 h-3 fill-current" />
-                {userCredits} credits
-              </div>
-            </div>
-          </div>
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors text-sm font-medium">
-            <LogOut className="w-5 h-5" />
-            Logout
-          </button>
-        </div>
-      </aside>
+      )}
 
       {/* Welcome Dialog */}
       <Dialog open={isWelcomeOpen} onOpenChange={setIsWelcomeOpen}>
         <DialogContent className="bg-transparent border-0 shadow-none p-0 max-w-xl w-full flex flex-col items-center justify-center focus:outline-none">
+          <DialogTitle className="sr-only">Welcome to ATP</DialogTitle>
           <div className="w-full bg-white p-8 rounded-3xl shadow-2xl relative">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200">
@@ -394,7 +174,7 @@ export default function StudentPortal() {
                 </div>
 
                 <div className="text-gray-800 leading-relaxed space-y-4 text-[15px]">
-                  <p>Hey {"{Name}"}, welcome to ATP! 🎉</p>
+                  <p>Hey {member?.full_name}, welcome to ATP! 🎉</p>
                   <p>
                     I'm Viet Dang from the Student Experience team — super
                     excited to have you here!
@@ -417,7 +197,7 @@ export default function StudentPortal() {
           </div>
 
           <button
-            onClick={() => setIsWelcomeOpen(false)}
+            onClick={handleCloseWelcome}
             className="mt-6 bg-gradient-to-r from-primary to-red-600 hover:from-red-700 hover:to-red-800 text-white px-8 py-3 rounded-full font-medium text-sm shadow-lg shadow-red-200 transition-all hover:-translate-y-0.5 flex items-center gap-2"
           >
             Got it <span className="text-lg leading-none">→</span>
@@ -426,53 +206,13 @@ export default function StudentPortal() {
       </Dialog>
       
       {/* Purchase Dialog */}
-      <Dialog open={purchaseDialog.isOpen} onOpenChange={(open) => !open && setPurchaseDialog(prev => ({...prev, isOpen: false}))}>
-        <DialogContent className="max-w-md">
-           <DialogHeader>
-             <DialogTitle className="text-2xl font-serif font-bold">Unlock Content</DialogTitle>
-           </DialogHeader>
-           
-           <div className="py-6 space-y-6">
-              <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-                 <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200 shrink-0">
-                   <img src={purchaseDialog.video?.image} alt="" className="w-full h-full object-cover" />
-                 </div>
-                 <div>
-                   <h3 className="font-bold text-gray-900 line-clamp-2">{purchaseDialog.video?.title}</h3>
-                   <p className="text-sm text-gray-500 mt-1">{purchaseDialog.type === 'full' ? 'Masterclass' : 'Quick Tip'}</p>
-                 </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>Current Balance</span>
-                  <span className="font-medium text-gray-900">{userCredits} credits</span>
-                </div>
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>Cost</span>
-                  <span className="font-bold text-red-600">-{purchaseDialog.type === 'full' ? 10 : 1} credits</span>
-                </div>
-                <div className="h-px bg-gray-100 my-2" />
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-900">Balance After</span>
-                  <div className="flex items-center gap-1 font-bold text-primary">
-                    <Coins className="w-4 h-4 fill-current" />
-                    {userCredits - (purchaseDialog.type === 'full' ? 10 : 1)} credits
-                  </div>
-                </div>
-              </div>
-           </div>
-
-           <DialogFooter className="flex-col sm:flex-row gap-2">
-             <Button variant="outline" onClick={() => setPurchaseDialog(prev => ({...prev, isOpen: false}))}>
-               Cancel
-             </Button>
-             <Button onClick={handlePurchase} className="bg-primary text-white hover:bg-primary/90">
-               Confirm Purchase
-             </Button>
-           </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <PurchaseVideoDialog
+        open={purchaseDialog.isOpen}
+        onOpenChange={(open) => setPurchaseDialog(prev => ({ ...prev, isOpen: open }))}
+        video={purchaseDialog.video}
+        type={purchaseDialog.type}
+        onSuccess={handlePurchaseSuccess}
+      />
 
       {/* Main Content */}
       <main className="flex-1 min-w-0">
@@ -553,7 +293,7 @@ export default function StudentPortal() {
           </div>
 
           {/* Featured Hero Video */}
-          {(activeTab === "all" || activeTab === "full") && (
+          {(activeTab === "all" || activeTab === "full") && fullVideos.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -561,7 +301,7 @@ export default function StudentPortal() {
               onClick={() => handleVideoClick(fullVideos[0], 'full')}
             >
               <img
-                src={masterclass1}
+                src={fullVideos[0].thumbnail_url || masterclass1}
                 alt="Featured"
                 className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-500"
               />
@@ -570,7 +310,7 @@ export default function StudentPortal() {
               <div className="absolute top-6 right-6 z-20">
                  <div className="bg-black/60 backdrop-blur-md text-white px-4 py-2 rounded-full flex items-center gap-2 font-bold border border-white/10">
                     <Coins className="w-4 h-4 text-amber-400 fill-current" />
-                    10 credits
+                    {fullVideos[0].price_credit} credits
                  </div>
               </div>
 
@@ -579,19 +319,17 @@ export default function StudentPortal() {
                   Featured Masterclass
                 </div>
                 <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-4">
-                  Mastering the Australian Interview Process
+                  {fullVideos[0].title}
                 </h2>
                 <p className="text-gray-300 mb-8 line-clamp-2">
-                  Join Sarah Jenkins, HR Director at TechCorp, as she breaks
-                  down exactly what Australian employers are looking for in
-                  cultural fit interviews.
+                  {fullVideos[0].description || 'Watch this featured masterclass to enhance your career development.'}
                 </p>
                 <div className="flex items-center gap-4">
                   <Button className="rounded-full bg-white text-primary hover:bg-gray-100 px-8 py-6 text-lg">
                     <Play className="w-5 h-5 mr-2 fill-current" /> Watch Now
                   </Button>
                   <span className="text-white/60 text-sm font-medium">
-                    45 min duration
+                    {fullVideos[0].duration ? `${Math.floor(fullVideos[0].duration / 60)} min` : '45 min'} duration
                   </span>
                 </div>
               </div>
@@ -614,43 +352,53 @@ export default function StudentPortal() {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {shortVideos.map((video) => (
-                  <motion.div
-                    key={video.id}
-                    whileHover={{ y: -5 }}
-                    className="group relative aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer shadow-md"
-                    onClick={() => handleVideoClick(video, 'short')}
-                  >
-                    <img
-                      src={video.image}
-                      alt={video.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
-                    
-                    <div className="absolute top-3 right-3 z-20">
-                       <div className="bg-black/60 backdrop-blur-md text-white px-2.5 py-1 rounded-full flex items-center gap-1.5 text-xs font-bold border border-white/10">
-                          <Coins className="w-3 h-3 text-amber-400 fill-current" />
-                          1
-                       </div>
-                    </div>
-
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white">
-                        <Play className="w-6 h-6 fill-current" />
+                {isLoadingVideos ? (
+                  <div className="col-span-full flex justify-center items-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  </div>
+                ) : shortVideos.length === 0 ? (
+                  <div className="col-span-full text-center py-12 text-gray-500">
+                    No short videos available yet.
+                  </div>
+                ) : (
+                  shortVideos.map((video) => (
+                    <motion.div
+                      key={video.id}
+                      whileHover={{ y: -5 }}
+                      className="group relative aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer shadow-md"
+                      onClick={() => handleVideoClick(video, 'short')}
+                    >
+                      <img
+                        src={video.thumbnail_url || short1}
+                        alt={video.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
+                      
+                      <div className="absolute top-3 right-3 z-20">
+                         <div className="bg-black/60 backdrop-blur-md text-white px-2.5 py-1 rounded-full flex items-center gap-1.5 text-xs font-bold border border-white/10">
+                            <Coins className="w-3 h-3 text-amber-400 fill-current" />
+                            {video.price_credit}
+                         </div>
                       </div>
-                    </div>
 
-                    <div className="absolute bottom-0 left-0 p-4 w-full">
-                      <h4 className="text-white font-bold leading-tight mb-1">
-                        {video.title}
-                      </h4>
-                      <span className="text-xs text-gray-300">
-                        {video.duration}
-                      </span>
-                    </div>
-                  </motion.div>
-                ))}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white">
+                          <Play className="w-6 h-6 fill-current" />
+                        </div>
+                      </div>
+
+                      <div className="absolute bottom-0 left-0 p-4 w-full">
+                        <h4 className="text-white font-bold leading-tight mb-1">
+                          {video.title}
+                        </h4>
+                        <span className="text-xs text-gray-300">
+                          {video.duration ? `${video.duration} sec` : '45 sec'}
+                        </span>
+                      </div>
+                    </motion.div>
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -684,62 +432,72 @@ export default function StudentPortal() {
               </div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {fullVideos.map((video) => (
-                  <motion.div
-                    key={video.id}
-                    whileHover={{ y: -5 }}
-                    className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group cursor-pointer hover:shadow-md transition-all"
-                    onClick={() => handleVideoClick(video, 'full')}
-                  >
-                    <div className="relative aspect-video overflow-hidden">
-                      <img
-                        src={video.image}
-                        alt={video.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute top-3 right-3 z-20">
-                         <div className="bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-bold border border-white/10">
-                            <Coins className="w-3 h-3 text-amber-400 fill-current" />
-                            10
-                         </div>
-                      </div>
-                      <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/70 backdrop-blur-sm text-white text-xs font-bold rounded-md">
-                        {video.duration}
-                      </div>
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
-                        <div className="w-12 h-12 rounded-full bg-white text-primary flex items-center justify-center shadow-lg">
-                          <Play className="w-5 h-5 fill-current ml-1" />
+                {isLoadingVideos ? (
+                  <div className="col-span-full flex justify-center items-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  </div>
+                ) : fullVideos.length === 0 ? (
+                  <div className="col-span-full text-center py-12 text-gray-500">
+                    No full masterclass videos available yet.
+                  </div>
+                ) : (
+                  fullVideos.map((video) => (
+                    <motion.div
+                      key={video.id}
+                      whileHover={{ y: -5 }}
+                      className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group cursor-pointer hover:shadow-md transition-all"
+                      onClick={() => handleVideoClick(video, 'full')}
+                    >
+                      <div className="relative aspect-video overflow-hidden">
+                        <img
+                          src={video.thumbnail_url || masterclass1}
+                          alt={video.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="absolute top-3 right-3 z-20">
+                           <div className="bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-bold border border-white/10">
+                              <Coins className="w-3 h-3 text-amber-400 fill-current" />
+                              {video.price_credit}
+                           </div>
                         </div>
-                      </div>
-                    </div>
-
-                    <div className="p-5">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="px-2 py-0.5 rounded-full bg-secondary text-primary text-[10px] font-bold uppercase tracking-wide">
-                          {video.category}
-                        </span>
-                      </div>
-                      <h4 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                        {video.title}
-                      </h4>
-
-                      <div className="flex items-center gap-3 pt-4 mt-4 border-t border-gray-50">
-                        <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
-                          {/* Placeholder avatar */}
-                          <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
-                            {video.author[0]}
+                        <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/70 backdrop-blur-sm text-white text-xs font-bold rounded-md">
+                          {video.duration ? `${Math.floor(video.duration / 60)} min` : 'N/A'}
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
+                          <div className="w-12 h-12 rounded-full bg-white text-primary flex items-center justify-center shadow-lg">
+                            <Play className="w-5 h-5 fill-current ml-1" />
                           </div>
                         </div>
-                        <div className="text-xs">
-                          <div className="font-bold text-gray-900">
-                            {video.author}
+                      </div>
+
+                      <div className="p-5">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="px-2 py-0.5 rounded-full bg-secondary text-primary text-[10px] font-bold uppercase tracking-wide">
+                            {video.category?.name || 'Career Development'}
+                          </span>
+                        </div>
+                        <h4 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                          {video.title}
+                        </h4>
+
+                        <div className="flex items-center gap-3 pt-4 mt-4 border-t border-gray-50">
+                          <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
+                            {/* Placeholder avatar */}
+                            <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
+                              {video.mentor ? video.mentor[0] : 'M'}
+                            </div>
                           </div>
-                          <div className="text-gray-500">{video.role}</div>
+                          <div className="text-xs">
+                            <div className="font-bold text-gray-900">
+                              {video.mentor || 'Mentor'}
+                            </div>
+                            <div className="text-gray-500">Career Coach</div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  ))
+                )}
               </div>
             </div>
           )}

@@ -24,20 +24,44 @@ export default function Home() {
             <img src={atpLogo} alt="ATP Global" className="h-12 w-auto object-contain" />
           </div>
           
-          <div className="hidden md:flex items-center gap-8 font-medium text-sm text-gray-600">
-            <Link href="/">
-              <a className="hover:text-primary transition-colors">Sudents & Graduates</a>
-            </Link>
-            <Link href="/programs">
-              <a className="hover:text-primary transition-colors">Employers</a>
-            </Link>
-            <a href="#" className="hover:text-primary transition-colors">About us</a>
+          <div className="hidden md:flex items-center gap-6 font-medium text-sm text-gray-600">
+            {/* Students & Graduates Dropdown */}
+            <div className="relative group">
+              <button className="hover:text-primary transition-colors flex items-center gap-1">
+                Students & Graduates
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div className="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <a href="https://atp-global.com.au/search" className="block px-4 py-2 hover:bg-gray-50 text-gray-700 hover:text-primary transition-colors">Intern Jobs</a>
+                <a href="https://atp-global.com.au/testimonials" className="block px-4 py-2 hover:bg-gray-50 text-gray-700 hover:text-primary transition-colors">Testimonials</a>
+                <div className="border-t border-gray-100 my-1"></div>
+                <a href="https://atp-global.com.au/data-cap" className="block px-4 py-2 hover:bg-gray-50 text-gray-700 hover:text-primary transition-colors">DataCAP</a>
+                <a href="https://atp-global.com.au/danh-gia-nang-luc" className="block px-4 py-2 hover:bg-gray-50 text-gray-700 hover:text-primary transition-colors">Core Competency Assessment</a>
+              </div>
+            </div>
+
+            {/* Employers Dropdown */}
+            <div className="relative group">
+              <button className="hover:text-primary transition-colors flex items-center gap-1">
+                Employers
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div className="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <a href="https://atp-global.com.au/recruitment" className="block px-4 py-2 hover:bg-gray-50 text-gray-700 hover:text-primary transition-colors">Recruitment</a>
+                <a href="https://atp-global.com.au/partner" className="block px-4 py-2 hover:bg-gray-50 text-gray-700 hover:text-primary transition-colors">Partners</a>
+              </div>
+            </div>
+
+            <a href="https://talent.atp-global.com.au" className="hover:text-primary transition-colors">Community</a>
+            <a href="https://atp-global.com.au/about-us" className="hover:text-primary transition-colors">About Us</a>
+            <a href="https://atp-global.com.au/contact-us" className="hover:text-primary transition-colors">Contact Us</a>
           </div>
 
           <div className="flex items-center gap-4">
-            <Button variant="outline" className="hidden sm:flex rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-primary">
-              Contact Us
-            </Button>
             <Link href="/login">
               <Button className="rounded-full bg-primary text-white hover:bg-primary/90 px-6 shadow-lg shadow-primary/20">
                 Login
