@@ -1,14 +1,16 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle2, Users, Building2, GraduationCap, ArrowDown } from "lucide-react";
+import { ArrowRight, CheckCircle2, Users, Building2, GraduationCap, ArrowDown, LogOut, User } from "lucide-react";
 import studentPortrait from "@assets/generated_images/friendly_female_student_portrait.png";
 import employerPortrait from "@assets/generated_images/friendly_employer_portrait.png";
 import groupImage from "@assets/generated_images/diverse_group_of_graduates.png";
 
 import atpLogo from "@assets/image_1764912058849.png";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Home() {
+  const { member, isAuthenticated, logout } = useAuth();
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -62,11 +64,30 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link href="/login">
-              <Button className="rounded-full bg-primary text-white hover:bg-primary/90 px-6 shadow-lg shadow-primary/20">
-                Login
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link href="/student-portal">
+                  <Button variant="ghost" className="rounded-full hover:bg-primary/5 text-primary">
+                    <User className="w-4 h-4 mr-2" />
+                    {member?.first_name || 'Portal'}
+                  </Button>
+                </Link>
+                <Button 
+                  onClick={logout}
+                  variant="outline" 
+                  className="rounded-full border-primary/20 text-primary hover:bg-primary/5"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Link href="/login">
+                <Button className="rounded-full bg-primary text-white hover:bg-primary/90 px-6 shadow-lg shadow-primary/20">
+                  Login
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </nav>
