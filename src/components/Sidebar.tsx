@@ -14,7 +14,6 @@ import { useState } from "react";
 import ConsultationDialog from "@/components/ConsultationDialog";
 import LogoutDialog from "@/components/LogoutDialog";
 import studentPortrait from "@assets/generated_images/friendly_female_student_portrait.png";
-import atpLogo from "@assets/image_1764912058849.png";
 
 interface SidebarProps {
   activePage?: 'videos' | 'resources' | 'events' | 'members';
@@ -57,7 +56,7 @@ export default function Sidebar({ activePage }: SidebarProps) {
   return (
     <aside className="w-72 bg-white border-r border-gray-100 h-screen sticky top-0 hidden lg:flex flex-col p-6 z-20">
       <div className="flex items-center gap-2 mb-10 px-2">
-        <img src={atpLogo} alt="ATP Global" className="h-12 w-auto object-contain" />
+        <img src="https://atp-global.com.au/images/logo.webp" alt="ATP Global" className="h-12 w-auto object-contain" />
       </div>
 
       <div className="space-y-2 flex-1">

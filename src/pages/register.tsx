@@ -28,7 +28,6 @@ import {
   Search,
 } from "lucide-react";
 import { clsx } from "clsx";
-import atpLogo from "@assets/image_1764912058849.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { completeRegistration } from "@/services/memberService";
 import { toast } from "sonner";
@@ -134,7 +133,7 @@ function RegisterPage() {
       <div className="w-full max-w-md mb-8 text-center flex justify-center">
         <Link href="/">
           <img
-            src={atpLogo}
+            src="https://atp-global.com.au/images/logo.webp"
             alt="ATP Global"
             className="h-16 w-auto object-contain cursor-pointer"
           />

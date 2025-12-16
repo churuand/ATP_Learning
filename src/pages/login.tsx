@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { getGoogleAuthUrl, getLinkedInAuthUrl } from "@/services/authService";
-import atpLogo from "@assets/image_1764912058849.png";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -28,7 +27,7 @@ export default function Login() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-4 text-center">
           <div className="flex justify-center">
-            <img src={atpLogo} alt="ATP Global" className="h-16 w-auto object-contain" />
+            <img src="https://atp-global.com.au/images/logo.webp" alt="ATP Global" className="h-16 w-auto object-contain" />
           </div>
           <CardTitle className="text-2xl">Welcome to ATP Community</CardTitle>
           <CardDescription>
