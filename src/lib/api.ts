@@ -42,10 +42,10 @@ export async function apiRequest<T = any>(
   const token = getToken();
   const url = `${config.apiBaseUrl}${endpoint}`;
 
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    ...options.headers,
+    ...(options.headers as Record<string, string> | undefined),
   };
 
   if (token) {
