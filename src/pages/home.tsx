@@ -21,9 +21,9 @@ export default function Home() {
       {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-gray-100">
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2 cursor-pointer">
             <img src="https://atp-global.com.au/images/logo.webp" alt="ATP Global" className="h-12 w-auto object-contain" />
-          </div>
+          </Link>
           
           <div className="hidden md:flex items-center gap-6 font-medium text-sm text-gray-600">
             {/* Students & Graduates Dropdown */}
@@ -66,7 +66,7 @@ export default function Home() {
             {isAuthenticated ? (
               <>
                 <Link href="/student-portal">
-                  <Button variant="ghost" className="rounded-full hover:bg-primary/5 text-primary">
+                  <Button variant="ghost" className="rounded-full hover:bg-primary/5 text-primary cursor-pointer">
                     <User className="w-4 h-4 mr-2" />
                     {member?.first_name || 'Portal'}
                   </Button>
@@ -74,7 +74,7 @@ export default function Home() {
                 <Button 
                   onClick={logout}
                   variant="outline" 
-                  className="rounded-full border-primary/20 text-primary hover:bg-primary/5"
+                  className="rounded-full border-primary/20 text-primary hover:bg-primary/5 cursor-pointer"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
                   Logout
@@ -126,9 +126,11 @@ export default function Home() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                <Button className="rounded-full bg-primary text-white hover:bg-primary/90 px-8 py-6 text-lg font-medium shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                  Apply now!
-                </Button>
+                <Link href="/apply-internship">
+                  <Button className="rounded-full bg-primary text-white hover:bg-primary/90 px-8 py-6 text-lg font-medium shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                    Apply now!
+                  </Button>
+                </Link>
                 <Button 
                   variant="outline" 
                   className="rounded-full border-primary/20 text-primary hover:bg-primary/5 px-8 py-6 text-lg font-medium hover:-translate-y-0.5 transition-all"

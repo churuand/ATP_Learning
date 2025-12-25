@@ -20,6 +20,8 @@ import Blocked from "@/pages/blocked";
 import GoogleAuthCallback from "@/pages/auth-callback-google";
 import LinkedInAuthCallback from "@/pages/auth-callback-linkedin";
 import QuickTips from "@/pages/quick-tips";
+import ApplyInternship from "@/pages/apply-internship";
+import ApplySuccess from "@/pages/apply-success";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -30,6 +32,9 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/programs" component={Programs} />
       <Route path="/intern-jobs" component={InternJobs} />
+      <Route path="/apply-internship/:jobId" component={ApplyInternship} />
+      <Route path="/apply-internship" component={ApplyInternship} />
+      <Route path="/apply-success" component={ApplySuccess} />
       
       {/* OAuth callback routes */}
       <Route path="/auth/google/callback" component={GoogleAuthCallback} />

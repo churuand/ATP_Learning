@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,9 +26,9 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/10 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-4 text-center">
-          <div className="flex justify-center">
+          <Link href="/" className="flex justify-center cursor-pointer">
             <img src="https://atp-global.com.au/images/logo.webp" alt="ATP Global" className="h-16 w-auto object-contain" />
-          </div>
+          </Link>
           <CardTitle className="text-2xl">Welcome to ATP Community</CardTitle>
           <CardDescription>
             Sign in to access exclusive content, connect with members, and unlock your potential
