@@ -225,7 +225,7 @@ export default function VideoPlayer() {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
+                    {/* <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
                         <div className="flex items-center bg-gray-100 rounded-full h-9">
                             <Button variant="ghost" className="rounded-l-full h-full px-4 hover:bg-gray-200 border-r border-gray-300 gap-2 text-gray-700">
                                 <ThumbsUp className="w-4 h-4" /> 2.4k
@@ -237,7 +237,7 @@ export default function VideoPlayer() {
                         <Button variant="ghost" className="bg-gray-100 rounded-full h-9 px-4 gap-2 hover:bg-gray-200 text-gray-700">
                             <Share2 className="w-4 h-4" /> Share
                         </Button>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Description Box */}
@@ -247,7 +247,7 @@ export default function VideoPlayer() {
                     </div>
                     <p className="text-gray-700 leading-relaxed">
                         {currentVideo.description || 'Watch this masterclass to enhance your career development skills.'}
-                        <span className="font-bold text-gray-900 block mt-1">...more</span>
+                        {/* <span className="font-bold text-gray-900 block mt-1">...more</span> */}
                     </p>
                     {currentVideo.tags && currentVideo.tags.length > 0 && (
                       <div className="flex gap-2 mt-3 flex-wrap">
@@ -261,7 +261,7 @@ export default function VideoPlayer() {
                 </div>
 
                 {/* Comments Section Placeholder */}
-                <div className="mt-6 hidden md:block">
+                {/* <div className="mt-6 hidden md:block">
                     <h3 className="text-xl font-bold text-gray-900 mb-4">32 Comments</h3>
                     <div className="flex gap-4 mb-6">
                         <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 shrink-0">
@@ -269,7 +269,7 @@ export default function VideoPlayer() {
                         </div>
                         <Input placeholder="Add a comment..." className="border-0 border-b border-gray-300 rounded-none px-0 focus-visible:ring-0 focus-visible:border-gray-900 bg-transparent" />
                     </div>
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -277,11 +277,11 @@ export default function VideoPlayer() {
             <div className="space-y-6">
                 
                 {/* Filter Chips */}
-                <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                {/* <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
                     <Button size="sm" className="rounded-lg bg-black text-white hover:bg-gray-800 text-xs h-8">All</Button>
                     <Button size="sm" variant="secondary" className="rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-xs h-8">From Sarah Jenkins</Button>
                     <Button size="sm" variant="secondary" className="rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-xs h-8">Related</Button>
-                </div>
+                </div> */}
 
                 {/* Up Next List (Mixed with Shorts) */}
                 <div className="flex flex-col gap-4">
@@ -306,7 +306,7 @@ export default function VideoPlayer() {
                     ))}
 
                     {/* Shorts Shelf */}
-                    <div className="py-2 border-y border-gray-100 my-2">
+                    <div>
                         <div className="flex items-center gap-2 mb-3">
                             <div className="w-6 h-6 bg-red-600 rounded-lg flex items-center justify-center">
                                 <Play className="w-3 h-3 text-white fill-current" />

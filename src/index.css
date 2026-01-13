@@ -4,8 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "DM Sans", "Inter", sans-serif;
-  --font-serif: "Playfair Display", serif;
+  --font-sans: "Nunito", sans-serif;
+  --font-serif: "Nunito", serif;
   
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
@@ -60,5 +60,15 @@
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif font-medium tracking-tight;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }

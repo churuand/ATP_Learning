@@ -26,9 +26,11 @@ import {
   Loader2,
   Search,
   PlayCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { clsx } from "clsx";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getVideos, checkPurchaseStatus } from "@/services/videoService";
@@ -67,6 +69,8 @@ export default function StudentPortal() {
   const userCredits = member?.total_credit || 0;
   const queryClient = useQueryClient();
   const [checkingPurchase, setCheckingPurchase] = useState(false);
+  const quickTipsScrollRef = useRef<HTMLDivElement>(null);
+  const masterclassesScrollRef = useRef<HTMLDivElement>(null);
 
   // Check if user has seen welcome message
   const hasSeenWelcome = localStorage.getItem('atp_welcome_seen') === 'true';
@@ -137,6 +141,52 @@ export default function StudentPortal() {
   const handleCloseWelcome = () => {
     localStorage.setItem('atp_welcome_seen', 'true');
     setIsWelcomeOpen(false);
+  };
+
+  const scrollQuickTips = (direction: 'left' | 'right') => {
+    if (quickTipsScrollRef.current) {
+      const container = quickTipsScrollRef.current;
+      const containerWidth = container.clientWidth;
+      // Scroll by approximately 1 item width (2 items on mobile, 4 items on desktop)
+      // Each item is roughly 50% on mobile, 25% on desktop, plus gap
+      const isMobile = containerWidth < 768;
+      const scrollAmount = isMobile 
+        ? containerWidth * 0.5 + 24 // 50% width + gap
+        : containerWidth * 0.25 + 18; // 25% width + gap
+      
+      const currentScroll = container.scrollLeft;
+      const newScroll = direction === 'left' 
+        ? currentScroll - scrollAmount 
+        : currentScroll + scrollAmount;
+      
+      container.scrollTo({
+        left: newScroll,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const scrollMasterclasses = (direction: 'left' | 'right') => {
+    if (masterclassesScrollRef.current) {
+      const container = masterclassesScrollRef.current;
+      const containerWidth = container.clientWidth;
+      // Scroll by approximately 1 item width (1 item on mobile, 3 items on desktop)
+      // Each item is roughly 100% on mobile, 33.33% on desktop, plus gap
+      const isMobile = containerWidth < 1024;
+      const scrollAmount = isMobile 
+        ? containerWidth * 0.9 + 32 // ~100% width + gap
+        : containerWidth * 0.333 + 21; // ~33.33% width + gap (3 items)
+      
+      const currentScroll = container.scrollLeft;
+      const newScroll = direction === 'left' 
+        ? currentScroll - scrollAmount 
+        : currentScroll + scrollAmount;
+      
+      container.scrollTo({
+        left: newScroll,
+        behavior: 'smooth'
+      });
+    }
   };
 
   return (
@@ -307,7 +357,7 @@ export default function StudentPortal() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
-              <div className="absolute top-6 right-6 z-20">
+              <div className="absolute top-6 right-6 z-9">
                  <div className="bg-black/60 backdrop-blur-md text-white px-4 py-2 rounded-full flex items-center gap-2 font-bold border border-white/10">
                     <Coins className="w-4 h-4 text-amber-400 fill-current" />
                     {fullVideos[0].price_credit} credits
@@ -346,59 +396,77 @@ export default function StudentPortal() {
                   </span>
                   Quick Tips
                 </h3>
-                <button className="text-sm font-medium text-primary hover:underline">
-                  View all shorts
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => scrollQuickTips('left')}
+                    className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors"
+                    aria-label="Scroll left"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => scrollQuickTips('right')}
+                    className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors"
+                    aria-label="Scroll right"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {isLoadingVideos ? (
-                  <div className="col-span-full flex justify-center items-center py-12">
-                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                  </div>
-                ) : shortVideos.length === 0 ? (
-                  <div className="col-span-full text-center py-12 text-gray-500">
-                    No short videos available yet.
-                  </div>
-                ) : (
-                  shortVideos.map((video) => (
-                    <motion.div
-                      key={video.id}
-                      whileHover={{ y: -5 }}
-                      className="group relative aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer shadow-md"
-                      onClick={() => handleVideoClick(video, 'short')}
-                    >
-                      <img
-                        src={video.thumbnail_url || short1}
-                        alt={video.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
-                      
-                      <div className="absolute top-3 right-3 z-20">
-                         <div className="bg-black/60 backdrop-blur-md text-white px-2.5 py-1 rounded-full flex items-center gap-1.5 text-xs font-bold border border-white/10">
-                            <Coins className="w-3 h-3 text-amber-400 fill-current" />
-                            {video.price_credit}
-                         </div>
-                      </div>
-
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white">
-                          <Play className="w-6 h-6 fill-current" />
+              <div className="relative">
+                <div
+                  ref={quickTipsScrollRef}
+                  className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
+                >
+                  {isLoadingVideos ? (
+                    <div className="w-full flex justify-center items-center py-12">
+                      <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                    </div>
+                  ) : shortVideos.length === 0 ? (
+                    <div className="w-full text-center py-12 text-gray-500">
+                      No short videos available yet.
+                    </div>
+                  ) : (
+                    shortVideos.map((video) => (
+                      <motion.div
+                        key={video.id}
+                        whileHover={{ y: -5 }}
+                        className="group relative aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer shadow-md flex-shrink-0 w-[calc(50%-12px)] md:w-[calc(25%-18px)]"
+                        onClick={() => handleVideoClick(video, 'short')}
+                      >
+                        <img
+                          src={video.thumbnail_url || short1}
+                          alt={video.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
+                        
+                        <div className="absolute top-3 right-3 z-9">
+                           <div className="bg-black/60 backdrop-blur-md text-white px-2.5 py-1 rounded-full flex items-center gap-1.5 text-xs font-bold border border-white/10">
+                              <Coins className="w-3 h-3 text-amber-400 fill-current" />
+                              {video.price_credit}
+                           </div>
                         </div>
-                      </div>
 
-                      <div className="absolute bottom-0 left-0 p-4 w-full">
-                        <h4 className="text-white font-bold leading-tight mb-1">
-                          {video.title}
-                        </h4>
-                        <span className="text-xs text-gray-300">
-                          {video.duration ? `${video.duration} sec` : '45 sec'}
-                        </span>
-                      </div>
-                    </motion.div>
-                  ))
-                )}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white">
+                            <Play className="w-6 h-6 fill-current" />
+                          </div>
+                        </div>
+
+                        <div className="absolute bottom-0 left-0 p-4 w-full">
+                          <h4 className="text-white font-bold leading-tight mb-1">
+                            {video.title}
+                          </h4>
+                          <span className="text-xs text-gray-300">
+                            {video.duration ? `${video.duration} sec` : '45 sec'}
+                          </span>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -413,48 +481,52 @@ export default function StudentPortal() {
                   </span>
                   Latest Masterclasses
                 </h3>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 rounded-full text-xs"
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => scrollMasterclasses('left')}
+                    className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors"
+                    aria-label="Scroll left"
                   >
-                    Recent
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 rounded-full text-xs text-gray-500"
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => scrollMasterclasses('right')}
+                    className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors"
+                    aria-label="Scroll right"
                   >
-                    Popular
-                  </Button>
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {isLoadingVideos ? (
-                  <div className="col-span-full flex justify-center items-center py-12">
-                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                  </div>
-                ) : fullVideos.length === 0 ? (
-                  <div className="col-span-full text-center py-12 text-gray-500">
-                    No full masterclass videos available yet.
-                  </div>
-                ) : (
-                  fullVideos.map((video) => (
-                    <motion.div
-                      key={video.id}
-                      whileHover={{ y: -5 }}
-                      className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group cursor-pointer hover:shadow-md transition-all"
-                      onClick={() => handleVideoClick(video, 'full')}
-                    >
+              <div className="relative">
+                <div
+                  ref={masterclassesScrollRef}
+                  className="flex gap-8 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
+                >
+                  {isLoadingVideos ? (
+                    <div className="w-full flex justify-center items-center py-12">
+                      <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                    </div>
+                  ) : fullVideos.length === 0 ? (
+                    <div className="w-full text-center py-12 text-gray-500">
+                      No full masterclass videos available yet.
+                    </div>
+                  ) : (
+                    fullVideos.map((video) => (
+                      <motion.div
+                        key={video.id}
+                        whileHover={{ y: -5 }}
+                        className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group cursor-pointer hover:shadow-md transition-all flex-shrink-0 w-[calc(100%-16px)] lg:w-[calc(33.333%-21px)]"
+                        onClick={() => handleVideoClick(video, 'full')}
+                      >
                       <div className="relative aspect-video overflow-hidden">
                         <img
                           src={video.thumbnail_url || masterclass1}
                           alt={video.title}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
-                        <div className="absolute top-3 right-3 z-20">
+                        <div className="absolute top-3 right-3 z-9">
                            <div className="bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-bold border border-white/10">
                               <Coins className="w-3 h-3 text-amber-400 fill-current" />
                               {video.price_credit}
@@ -498,6 +570,7 @@ export default function StudentPortal() {
                     </motion.div>
                   ))
                 )}
+                </div>
               </div>
             </div>
           )}

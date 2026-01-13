@@ -55,7 +55,7 @@ export default function Sidebar({ activePage }: SidebarProps) {
 
   return (
     <aside className="w-72 bg-white border-r border-gray-100 h-screen sticky top-0 hidden lg:flex flex-col p-6 z-20">
-      <Link href="/" className="flex items-center gap-2 mb-10 px-2">
+      <Link href="/student-portal" className="flex items-center gap-2 mb-10 px-2">
         <img src="https://atp-global.com.au/images/logo.webp" alt="ATP Global" className="h-12 w-auto object-contain" />
       </Link>
 

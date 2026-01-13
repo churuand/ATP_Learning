@@ -277,10 +277,10 @@ export default function QuickTips() {
               )}
               
               {/* Click to toggle play */}
-              <div 
+              {/* <div 
                 className="absolute inset-0 z-10" 
                 onClick={() => setIsPlaying(!isPlaying)}
-              />
+              /> */}
             </motion.div>
           </AnimatePresence>
 
@@ -295,23 +295,23 @@ export default function QuickTips() {
                  <div className="font-bold text-sm text-white shadow-black drop-shadow-md">{currentTip.mentor || 'ATP Mentor'}</div>
                  <div className="text-xs text-white/80 shadow-black drop-shadow-md">{currentTip.category?.name || 'Career Coach'}</div>
                </div>
-               <Button variant="secondary" size="sm" className="h-7 text-xs bg-primary text-white hover:bg-primary/90 border-0 ml-2">
+               {/* <Button variant="secondary" size="sm" className="h-7 text-xs bg-primary text-white hover:bg-primary/90 border-0 ml-2">
                  Follow
-               </Button>
+               </Button> */}
              </div>
              
-             <div className="flex gap-4">
+             {/* <div className="flex gap-4">
                <button onClick={() => setIsMuted(!isMuted)} className="text-white hover:text-primary transition-colors">
                  {isMuted ? <VolumeX className="w-6 h-6 drop-shadow-md" /> : <Volume2 className="w-6 h-6 drop-shadow-md" />}
                </button>
                <button className="text-white hover:text-primary transition-colors">
                  <MoreHorizontal className="w-6 h-6 drop-shadow-md" />
                </button>
-             </div>
+             </div> */}
           </div>
 
           {/* Right Action Bar (Floating) */}
-          <div className="absolute right-4 bottom-32 flex flex-col gap-6 z-30 items-center">
+          {/* <div className="absolute right-4 bottom-32 flex flex-col gap-6 z-30 items-center">
              <div className="flex flex-col items-center gap-1">
                <button 
                  onClick={(e) => { e.stopPropagation(); setIsLiked(!isLiked); }}
@@ -349,17 +349,16 @@ export default function QuickTips() {
                </button>
                <span className="text-xs font-bold text-white drop-shadow-md">Share</span>
              </div>
-          </div>
+          </div> */}
 
           {/* Bottom Details */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 pt-24 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-20">
+          {/* <div className="absolute bottom-0 left-0 right-0 p-6 pt-24 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-20">
              <div className="pr-16">
                <h2 className="text-xl font-bold text-white mb-2 drop-shadow-md">{currentTip.title}</h2>
                <p className="text-white/90 text-sm leading-relaxed mb-4 line-clamp-2 drop-shadow-md">
                  {currentTip.description || 'Watch this quick tip to enhance your career skills.'}
                </p>
                
-               {/* Comment Input */}
                <div className="flex items-center gap-3 mt-4">
                  <Avatar className="w-8 h-8 border border-white/20">
                    <AvatarImage src={studentPortrait} />
@@ -381,13 +380,12 @@ export default function QuickTips() {
                </div>
              </div>
              
-             {/* Progress Bar */}
              <div className="absolute bottom-0 left-0 w-full h-1 bg-white/20">
                <div className="h-full bg-primary w-1/3 relative">
                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md transform scale-0 group-hover:scale-100" />
                </div>
              </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Right Side - Coming Up (Desktop) */}

@@ -26,12 +26,17 @@ import {
   Building2,
   GraduationCap,
   Search,
+  X,
+  ChevronsUpDown,
 } from "lucide-react";
 import { clsx } from "clsx";
 import { useAuth } from "@/contexts/AuthContext";
 import { completeRegistration } from "@/services/memberService";
 import { toast } from "sonner";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 
 function RegisterPage() {
   const [, setLocation] = useLocation();
@@ -41,6 +46,7 @@ function RegisterPage() {
   const [userType, setUserType] = useState<
     "student" | "employer" | "visitor" | null
   >(null);
+  const [openExplorationPopover, setOpenExplorationPopover] = useState(false);
   const [formData, setFormData] = useState({
     first_name: member?.first_name || "",
     last_name: member?.last_name || "",
@@ -53,15 +59,32 @@ function RegisterPage() {
     company: "",
     degree: "",
     grad_year: "",
-    exploration_goal: "",
+    exploration_goal: [] as string[],
     custom_country: "",
     introduction: "",
     linkedin_url: "",
     why_you_join: "",
   });
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | string[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const toggleExplorationGoal = (value: string) => {
+    setFormData((prev) => {
+      const currentGoals = prev.exploration_goal || [];
+      if (currentGoals.includes(value)) {
+        return {
+          ...prev,
+          exploration_goal: currentGoals.filter((g) => g !== value),
+        };
+      } else {
+        return {
+          ...prev,
+          exploration_goal: [...currentGoals, value],
+        };
+      }
+    });
   };
 
   const handleNext = () => {
@@ -107,7 +130,9 @@ function RegisterPage() {
         user_type: userType,
         degree: formData.degree || undefined,
         grad_year: formData.grad_year || undefined,
-        exploration_goal: formData.exploration_goal || undefined,
+        exploration_goal: Array.isArray(formData.exploration_goal) && formData.exploration_goal.length > 0
+          ? formData.exploration_goal
+          : undefined,
       };
 
       await completeRegistration(registrationData);
@@ -353,7 +378,7 @@ function RegisterPage() {
                 {userType === "student" && (
                   <>
                     <div className="space-y-2">
-                      <Label htmlFor="degree">Degree / Major</Label>
+                      <Label htmlFor="degree">Program</Label>
                       <Select
                         onValueChange={(val) =>
                           handleInputChange("degree", val)
@@ -361,7 +386,7 @@ function RegisterPage() {
                         value={formData.degree}
                       >
                         <SelectTrigger className="h-12 bg-gray-50 border-gray-200">
-                          <SelectValue placeholder="Select Degree / Major" />
+                          <SelectValue placeholder="Select Program" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="high_school">High school</SelectItem>
@@ -369,7 +394,7 @@ function RegisterPage() {
                             Foundation course
                           </SelectItem>
                           <SelectItem value="college">College</SelectItem>
-                          <SelectItem value="english">English</SelectItem>
+                          <SelectItem value="elicos">ELICOS</SelectItem>
                           <SelectItem value="university">University</SelectItem>
                           <SelectItem value="master">Master</SelectItem>
                           <SelectItem value="phd">PhD</SelectItem>
@@ -378,7 +403,7 @@ function RegisterPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="gradYear">Graduation Year</Label>
+                        <Label htmlFor="gradYear">Expected Graduation Year</Label>
                         <Select
                           onValueChange={(val) =>
                             handleInputChange("grad_year", val)
@@ -401,7 +426,7 @@ function RegisterPage() {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="country">Country</Label>
+                        <Label htmlFor="country">Country of Residence</Label>
                         <Select
                           onValueChange={(val) =>
                             handleInputChange("country", val)
@@ -480,28 +505,71 @@ function RegisterPage() {
                       <Label htmlFor="explore">
                         What do you want to explore?
                       </Label>
-                      <Select
-                        onValueChange={(val) =>
-                          handleInputChange("exploration_goal", val)
-                        }
-                        value={formData.exploration_goal}
-                      >
-                        <SelectTrigger className="h-12 bg-gray-50 border-gray-200">
-                          <SelectValue placeholder="Select option" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="internships">
-                            Finding internships
-                          </SelectItem>
-                          <SelectItem value="learning">
-                            Learning about Australia
-                          </SelectItem>
-                          <SelectItem value="advice">Career advice</SelectItem>
-                          <SelectItem value="content">
-                            Exploring content
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Popover open={openExplorationPopover} onOpenChange={setOpenExplorationPopover}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={openExplorationPopover}
+                            className="w-full justify-between h-12 bg-gray-50 border-gray-200"
+                          >
+                            {formData.exploration_goal.length > 0
+                              ? `${formData.exploration_goal.length} selected`
+                              : "Select options"}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+                          <div className="p-2 space-y-2">
+                            {[
+                              { value: "internships", label: "Finding internships" },
+                              { value: "learning", label: "Learning about Australia" },
+                              { value: "advice", label: "Career advice" },
+                              { value: "content", label: "Exploring content" },
+                            ].map((option) => (
+                              <div
+                                key={option.value}
+                                className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100 cursor-pointer"
+                                onClick={() => toggleExplorationGoal(option.value)}
+                              >
+                                <Checkbox
+                                  checked={formData.exploration_goal.includes(option.value)}
+                                  onCheckedChange={() => toggleExplorationGoal(option.value)}
+                                />
+                                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+                                  {option.label}
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                      {formData.exploration_goal.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {formData.exploration_goal.map((goal) => {
+                            const labels: Record<string, string> = {
+                              internships: "Finding internships",
+                              learning: "Learning about Australia",
+                              advice: "Career advice",
+                              content: "Exploring content",
+                            };
+                            return (
+                              <Badge
+                                key={goal}
+                                variant="secondary"
+                                className="px-3 py-1 text-sm gap-2"
+                              >
+                                {labels[goal] || goal}
+                                <X
+                                  className="w-3 h-3 cursor-pointer hover:text-red-500"
+                                  onClick={() => toggleExplorationGoal(goal)}
+                                />
+                              </Badge>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   </>
                 )}
@@ -628,28 +696,71 @@ function RegisterPage() {
                       <Label htmlFor="explore">
                         What do you want to explore?
                       </Label>
-                      <Select
-                        onValueChange={(val) =>
-                          handleInputChange("exploration_goal", val)
-                        }
-                        value={formData.exploration_goal}
-                      >
-                        <SelectTrigger className="h-12 bg-gray-50 border-gray-200">
-                          <SelectValue placeholder="Select option" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="internships">
-                            Finding internships
-                          </SelectItem>
-                          <SelectItem value="learning">
-                            Learning about Australia
-                          </SelectItem>
-                          <SelectItem value="advice">Career advice</SelectItem>
-                          <SelectItem value="content">
-                            Exploring content
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Popover open={openExplorationPopover} onOpenChange={setOpenExplorationPopover}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={openExplorationPopover}
+                            className="w-full justify-between h-12 bg-gray-50 border-gray-200"
+                          >
+                            {formData.exploration_goal.length > 0
+                              ? `${formData.exploration_goal.length} selected`
+                              : "Select options"}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+                          <div className="p-2 space-y-2">
+                            {[
+                              { value: "internships", label: "Finding internships" },
+                              { value: "learning", label: "Learning about Australia" },
+                              { value: "advice", label: "Career advice" },
+                              { value: "content", label: "Exploring content" },
+                            ].map((option) => (
+                              <div
+                                key={option.value}
+                                className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100 cursor-pointer"
+                                onClick={() => toggleExplorationGoal(option.value)}
+                              >
+                                <Checkbox
+                                  checked={formData.exploration_goal.includes(option.value)}
+                                  onCheckedChange={() => toggleExplorationGoal(option.value)}
+                                />
+                                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+                                  {option.label}
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                      {formData.exploration_goal.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {formData.exploration_goal.map((goal) => {
+                            const labels: Record<string, string> = {
+                              internships: "Finding internships",
+                              learning: "Learning about Australia",
+                              advice: "Career advice",
+                              content: "Exploring content",
+                            };
+                            return (
+                              <Badge
+                                key={goal}
+                                variant="secondary"
+                                className="px-3 py-1 text-sm gap-2"
+                              >
+                                {labels[goal] || goal}
+                                <X
+                                  className="w-3 h-3 cursor-pointer hover:text-red-500"
+                                  onClick={() => toggleExplorationGoal(goal)}
+                                />
+                              </Badge>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   </>
                 )}
@@ -742,28 +853,71 @@ function RegisterPage() {
                       <Label htmlFor="explore">
                         What do you want to explore?
                       </Label>
-                      <Select
-                        onValueChange={(val) =>
-                          handleInputChange("exploration_goal", val)
-                        }
-                        value={formData.exploration_goal}
-                      >
-                        <SelectTrigger className="h-12 bg-gray-50 border-gray-200">
-                          <SelectValue placeholder="Select option" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="internships">
-                            Finding internships
-                          </SelectItem>
-                          <SelectItem value="learning">
-                            Learning about Australia
-                          </SelectItem>
-                          <SelectItem value="advice">Career advice</SelectItem>
-                          <SelectItem value="content">
-                            Exploring content
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Popover open={openExplorationPopover} onOpenChange={setOpenExplorationPopover}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={openExplorationPopover}
+                            className="w-full justify-between h-12 bg-gray-50 border-gray-200"
+                          >
+                            {formData.exploration_goal.length > 0
+                              ? `${formData.exploration_goal.length} selected`
+                              : "Select options"}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+                          <div className="p-2 space-y-2">
+                            {[
+                              { value: "internships", label: "Finding internships" },
+                              { value: "learning", label: "Learning about Australia" },
+                              { value: "advice", label: "Career advice" },
+                              { value: "content", label: "Exploring content" },
+                            ].map((option) => (
+                              <div
+                                key={option.value}
+                                className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100 cursor-pointer"
+                                onClick={() => toggleExplorationGoal(option.value)}
+                              >
+                                <Checkbox
+                                  checked={formData.exploration_goal.includes(option.value)}
+                                  onCheckedChange={() => toggleExplorationGoal(option.value)}
+                                />
+                                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+                                  {option.label}
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                      {formData.exploration_goal.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {formData.exploration_goal.map((goal) => {
+                            const labels: Record<string, string> = {
+                              internships: "Finding internships",
+                              learning: "Learning about Australia",
+                              advice: "Career advice",
+                              content: "Exploring content",
+                            };
+                            return (
+                              <Badge
+                                key={goal}
+                                variant="secondary"
+                                className="px-3 py-1 text-sm gap-2"
+                              >
+                                {labels[goal] || goal}
+                                <X
+                                  className="w-3 h-3 cursor-pointer hover:text-red-500"
+                                  onClick={() => toggleExplorationGoal(goal)}
+                                />
+                              </Badge>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   </>
                 )}
