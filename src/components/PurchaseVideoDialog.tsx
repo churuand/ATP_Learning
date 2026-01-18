@@ -11,6 +11,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { purchaseVideo, type Video } from "@/services/videoService";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import TopUpDialog from "@/components/TopUpDialog";
+import { useState } from "react";
 import masterclass1 from "@assets/generated_images/interview_masterclass_thumbnail.png";
 
 interface PurchaseVideoDialogProps {
@@ -31,6 +33,7 @@ export default function PurchaseVideoDialog({
   const { member, refreshMember } = useAuth();
   const userCredits = member?.total_credit || 0;
   const queryClient = useQueryClient();
+  const [isTopUpOpen, setIsTopUpOpen] = useState(false);
 
   // Purchase mutation
   const purchaseMutation = useMutation({
@@ -114,10 +117,17 @@ export default function PurchaseVideoDialog({
           </div>
 
           {userCredits < video.price_credit && (
-            <div className="p-3 bg-red-50 border border-red-100 rounded-lg">
+            <div className="p-3 bg-red-50 border border-red-100 rounded-lg space-y-2">
               <p className="text-sm text-red-600 font-medium">
                 Insufficient credits! You need {video.price_credit - userCredits} more credits to purchase this video.
               </p>
+              <Button
+                size="sm"
+                onClick={() => setIsTopUpOpen(true)}
+                className="w-full bg-primary text-white hover:bg-primary/90"
+              >
+                Top Up Credits
+              </Button>
             </div>
           )}
         </div>
@@ -146,6 +156,14 @@ export default function PurchaseVideoDialog({
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      <TopUpDialog
+        open={isTopUpOpen}
+        onOpenChange={setIsTopUpOpen}
+        onSuccess={() => {
+          refreshMember();
+        }}
+      />
     </Dialog>
   );
 }

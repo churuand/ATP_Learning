@@ -38,6 +38,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import Sidebar from "@/components/Sidebar";
 import PurchaseVideoDialog from "@/components/PurchaseVideoDialog";
+import TopUpDialog from "@/components/TopUpDialog";
 
 // Mock Assets (replacing with generated ones later)
 import masterclass1 from "@assets/generated_images/interview_masterclass_thumbnail.png";
@@ -69,6 +70,7 @@ export default function StudentPortal() {
   const userCredits = member?.total_credit || 0;
   const queryClient = useQueryClient();
   const [checkingPurchase, setCheckingPurchase] = useState(false);
+  const [isTopUpOpen, setIsTopUpOpen] = useState(false);
   const quickTipsScrollRef = useRef<HTMLDivElement>(null);
   const masterclassesScrollRef = useRef<HTMLDivElement>(null);
 
@@ -262,6 +264,15 @@ export default function StudentPortal() {
         video={purchaseDialog.video}
         type={purchaseDialog.type}
         onSuccess={handlePurchaseSuccess}
+      />
+
+      {/* Top Up Dialog */}
+      <TopUpDialog
+        open={isTopUpOpen}
+        onOpenChange={setIsTopUpOpen}
+        onSuccess={() => {
+          refreshMember();
+        }}
       />
 
       {/* Main Content */}

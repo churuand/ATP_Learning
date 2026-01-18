@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 import ConsultationDialog from "@/components/ConsultationDialog";
 import LogoutDialog from "@/components/LogoutDialog";
+import TopUpDialog from "@/components/TopUpDialog";
 import studentPortrait from "@assets/generated_images/friendly_female_student_portrait.png";
 
 interface SidebarProps {
@@ -47,6 +48,7 @@ export default function Sidebar({ activePage }: SidebarProps) {
   const userCredits = member?.total_credit || 0;
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [isConsultationOpen, setIsConsultationOpen] = useState(false);
+  const [isTopUpOpen, setIsTopUpOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -114,9 +116,19 @@ export default function Sidebar({ activePage }: SidebarProps) {
             <div className="text-xs text-gray-500 truncate">
               Student Member
             </div>
-            <div className="flex items-center gap-1.5 mt-1.5 text-xs font-medium text-amber-600 bg-amber-50 w-fit px-2.5 py-1 rounded-full border border-amber-100">
-              <Coins className="w-3 h-3 fill-current" />
-              {userCredits} credits
+            <div className="flex items-center justify-between mt-1.5">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-100">
+                <Coins className="w-3 h-3 fill-current" />
+                {userCredits}
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setIsTopUpOpen(true)}
+                className="text-xs h-7"
+              >
+                Top Up
+              </Button>
             </div>
           </div>
         </div>
@@ -139,6 +151,11 @@ export default function Sidebar({ activePage }: SidebarProps) {
       <ConsultationDialog 
         open={isConsultationOpen}
         onOpenChange={setIsConsultationOpen}
+      />
+
+      <TopUpDialog 
+        open={isTopUpOpen}
+        onOpenChange={setIsTopUpOpen}
       />
     </aside>
   );
